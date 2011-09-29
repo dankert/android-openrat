@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
@@ -71,7 +72,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Jan Dankert
  */
-public class CMSRequest {
+public class CMSRequest implements Serializable {
 
     // some constants...
     private static final String CHARSET_UTF8 = "UTF-8";

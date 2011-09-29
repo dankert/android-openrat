@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, OpenRatBlog!</string>
-    <string name="app_name"></string>
-<string name="preferences">Einstellungen</string>
+	<string name="hello">Hallo</string>
+	<string name="app_name">OpenRat</string>
+	<string name="preferences">Einstellungen</string>
+	<string name="username">Benutzername</string>
+
+	<string name="hostname">Hostname</string>
+	<string name="password">Kennwort</string>
+	<string name="port">Port</string>
+	<string name="version">Version</string>
+	<string name="connect">Mit Server verbinden</string>
+	<string-array name="api_list">
+		<item>1</item>
+		<item>2</item>
+
+	</string-array>
+	<string-array name="version_list">
+		<item>1.0</item>
+		<item>1.1</item>
+	</string-array>
+	<string name="writable">Schreibzugriff</string>
+	<string name="version_summary">Server-Version</string>
 </resources>

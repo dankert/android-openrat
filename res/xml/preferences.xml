@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<PreferenceCategory><EditTextPreference android:key="server" android:title="Server"></EditTextPreference>
-</PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/preferences">
+	<PreferenceScreen android:title="Server">
+
+		<PreferenceCategory android:title="@string/preferences">
+			<EditTextPreference android:key="name"
+				android:title="Name"></EditTextPreference>
+			<EditTextPreference android:key="hostname"
+				android:title="@string/hostname"></EditTextPreference>
+			<EditTextPreference android:key="port"
+				android:defaultValue="80" android:title="@string/port"></EditTextPreference>
+			<EditTextPreference android:key="username"
+				android:title="@string/username"></EditTextPreference>
+			<EditTextPreference android:key="password"
+				android:title="@string/password"></EditTextPreference>
+
+
+		</PreferenceCategory>
+
+	</PreferenceScreen>
+
+	<ListPreference android:key="version" android:title="@string/version" android:entries="@array/version_list" android:entryValues="@array/api_list" android:summary="@string/version"></ListPreference>
+
+<CheckBoxPreference android:key="writable" android:title="@string/writable"></CheckBoxPreference>
 </PreferenceScreen>

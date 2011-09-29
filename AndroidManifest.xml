@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="de.openrat.android.blog"
-      android:versionCode="1"
-      android:versionName="1.0">
-      <uses-permission android:name="android.permission.INTERNET" /> 
-      
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".OpenRatBlog"
-                  android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+	package="de.openrat.android.blog" android:versionCode="1"
+	android:versionName="1.0">
 
-    <activity android:name="Configuration"></activity>
-</application>
+	<application android:icon="@drawable/icon" android:label="@string/app_name">
+		<activity android:name=".OpenRatBlog" android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 
+		<activity android:name="Configuration"></activity>
+
+		<activity android:name="ProjectActivity"></activity>
+		<activity android:name="FolderActivity"></activity>
+		<activity android:name="PageElementsActivity"></activity>
+		<activity android:name="PropertiesActivity"></activity>
+
+	</application>
+	
+	<uses-permission android:name="android.permission.INTERNET" />
+
+	<!-- Android 1.6 -->
+	<uses-sdk android:minSdkVersion="4"></uses-sdk>
 
 </manifest> 
