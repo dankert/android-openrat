@@ -21,9 +21,11 @@ Boston, MA  02110-1301, USA.
 package de.openrat.android.blog.client;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -383,7 +385,7 @@ public class HTTPRequest implements Serializable
 			// using HTTP/1.0 as this is supported by all HTTP-servers and
 			// proxys.
 			// We have no need for HTTP/1.1 at the moment.
-			header.append(this.method + " " + httpUrl + " HTTP/1.0"+CRLF);
+			header.append(this.method + " " + httpUrl + " HTTP/1.0" + CRLF);
 
 			// Setting the HTTP Header
 			Map<String, String> headers = new HashMap<String, String>();
@@ -408,9 +410,9 @@ public class HTTPRequest implements Serializable
 				{
 
 					headers.put("Content-Type", multipart.getContentType());
-					headers.put("Content-Length", ""+multipart.getPayload().getBytes().length);
-					
-					
+					headers.put("Content-Length", ""
+							+ multipart.getPayload().length);
+
 				} else
 				{
 					headers.put("Content-Type", "text/plain");
@@ -428,14 +430,18 @@ public class HTTPRequest implements Serializable
 
 			header.append(CRLF);
 
+			final OutputStream outputStream = socket
+					.getOutputStream();
+			outputStream.write(header.toString().getBytes());
+			
 			if (HTTP_POST.equals(this.method))
 			{
 				if (body == null && multipart.parts.size() == 0)
-					header.append(parameterList);
+					outputStream.write(parameterList.toString().getBytes());
 				else if (multipart.parts.size() > 0)
-					header.append(multipart.getPayload());
+					outputStream.write(multipart.getPayload());
 				else
-					header.append(body);
+					outputStream.write(body.getBytes());
 			}
 
 			if (this.trace)
@@ -443,11 +449,8 @@ public class HTTPRequest implements Serializable
 			if (this.trace)
 				System.out.println(header.toString());
 
-			final PrintWriter printWriter = new PrintWriter(socket
-					.getOutputStream(), true);
-			printWriter.write(header.toString());
 
-			printWriter.flush();
+			outputStream.flush();
 
 			final InputStream inputStream = socket.getInputStream();
 			final int available = inputStream.available();
@@ -537,13 +540,13 @@ public class HTTPRequest implements Serializable
 	private class Multipart implements Serializable
 	{
 
-		private static final String  CRLF = "\r\n";
+		private static final String CRLF = "\r\n";
 		private static final String BOUNDARY = "614BA262123F3B29656A745C5DD26";
 		List<Part> parts = new ArrayList<Part>();
 
-		public String getPayload()
+		public byte[] getPayload() throws IOException
 		{
-			StringBuffer body = new StringBuffer();
+			HttpOutputStream body = new HttpOutputStream();
 
 			for (Part part : parts)
 			{
@@ -561,13 +564,13 @@ public class HTTPRequest implements Serializable
 								+ part.filename + "\"") : "") + CRLF);
 				body.append(CRLF);
 				if (part.file.length > 0)
-					body.append(new String(part.file));
+					body.write(part.file);
 				else
 					body.append(part.text);
 				body.append(CRLF);
 			}
 			body.append("--" + BOUNDARY + "--");
-			return body.toString();
+			return body.toByteArray();
 		}
 
 		public String getContentType()
@@ -584,5 +587,18 @@ public class HTTPRequest implements Serializable
 		public String name;
 		public String contentType;
 		public String encoding;
+	}
+
+	private class HttpOutputStream extends ByteArrayOutputStream
+	{
+
+		public void write(String s) throws IOException
+		{
+			super.write(s.getBytes());
+		}
+		public void append(String s) throws IOException
+		{
+			super.write(s.getBytes());
+		}
 	}
 }

@@ -4,12 +4,10 @@
 package de.openrat.android.blog;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -40,6 +38,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.client.CMSRequest;
+import de.openrat.android.blog.util.FileUtils;
 
 /**
  * @author dankert
@@ -48,7 +47,6 @@ import de.openrat.android.blog.client.CMSRequest;
 public class FolderActivity extends ListActivity
 {
 
-	private static final String BOUNDARY = "usadlkuuusdkcua43sfd";
 	private static final String ID2 = "id";
 	public static final String CLIENT = "client";
 	private static final String NAME = "name";
@@ -390,24 +388,11 @@ public class FolderActivity extends ListActivity
 				try
 				{
 					final File file = new File(filePath);
-					BufferedInputStream br = new BufferedInputStream(
-							new FileInputStream(file));
-
-					StringBuffer fileContent = new StringBuffer();
-					// create a byte array
-					byte[] contents = new byte[1024];
-
-					int bytesRead;
-
-					while ((bytesRead = br.read(contents)) != -1)
-					{
-						fileContent.append(new String(contents, 0, bytesRead));
-						// fileContent.append("Hallo ");
-					}
-
-					// System.out.println("Body: \n\n\n\n\n"+body+"\n\n\n\n"+"Länge: "+body.length()+"\n\n");
-					request.setFile("file", fileContent.toString().getBytes(),
+					byte[] fileBytes = FileUtils.getBytesFromFile(file);
+					request.setFile("file", fileBytes,
 							file.getName(), "image/jpeg", "binary");
+					// request.setFile("file", inputStream,file.length(),
+					// file.getName(), "image/jpeg", "binary");
 
 					String response = request.performRequest();
 					// String response = request.performRequest("TEST TEST");
