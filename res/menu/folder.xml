@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/menu_language" android:title="@string/language"></item>
+	<item android:id="@+id/menu_model" android:title="@string/model"></item>
+	<item android:id="@+id/menu_new" android:title="@string/new1"></item>
+	<item android:id="@+id/menu_upload" android:title="@string/upload"></item>
+	<item android:id="@+id/menu_upload_image" android:title="@string/upload_image"></item> 
+</menu>
+ 

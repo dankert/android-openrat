@@ -5,23 +5,23 @@ package de.openrat.android.blog;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import de.openrat.android.blog.FolderEntry.FType;
+import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.client.CMSRequest;
 
 /**
@@ -35,7 +35,7 @@ public class ProjectActivity extends ListActivity
 	private static final String NAME = "name";
 	private static final String DESCRIPTION = "description";
 	private CMSRequest request;
-	private List<Map<String, String>> data;
+	private List<FolderEntry> data;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -49,7 +49,7 @@ public class ProjectActivity extends ListActivity
 		;
 		String[] from = new String[] { NAME, DESCRIPTION };
 		;
-		data = new ArrayList<Map<String, String>>();
+		data = new ArrayList<FolderEntry>();
 
 		request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
 
@@ -73,12 +73,15 @@ public class ProjectActivity extends ListActivity
 			JSONArray projects = json.getJSONArray("projects");
 			for (int i = 0; i < projects.length(); i++)
 			{
-				final Map<String, String> values = new HashMap<String, String>();
 				JSONObject project = projects.getJSONObject(i);
-				values.put(NAME, project.getString("name"));
-				values.put(DESCRIPTION, "");
-				values.put(ID2, project.getString("id"));
-				data.add(values);
+
+				final FolderEntry entry = new FolderEntry();
+				entry.type = FType.PROJECT;
+				entry.name = project.getString("name");
+				entry.description = "";
+				entry.id = project.getString("id");
+
+				data.add(entry);
 
 			}
 
@@ -96,15 +99,12 @@ public class ProjectActivity extends ListActivity
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
 			{
-				Toast.makeText(ProjectActivity.this, "Click on " + position,
-						Toast.LENGTH_SHORT).show();
-
 				final Intent i = new Intent(ProjectActivity.this,
 						FolderActivity.class);
 				i.putExtra(CLIENT, request);
 
 				// Projekt auswählen
-				String projectid = data.get(position).get(ID2);
+				String projectid = data.get(position).id;
 
 				request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
 
@@ -115,12 +115,20 @@ public class ProjectActivity extends ListActivity
 				String response = null;
 				try
 				{
+					ProgressDialog dialog = ProgressDialog.show(
+							ProjectActivity.this, getResources().getString(
+									R.string.loading), getResources()
+									.getString(R.string.waiting));
+					dialog.show();
 					response = request.performRequest();
-					System.out.println("Projekt ausgewählt: " + response);
+					dialog.dismiss();
 
 				} catch (IOException e)
 				{
-					System.err.println("Fehler bei Projektauswahl: "+response);
+					Toast.makeText(ProjectActivity.this, e.getMessage(),
+							Toast.LENGTH_LONG);
+					System.err
+							.println("Fehler bei Projektauswahl: " + response);
 					System.err.println(e.getMessage());
 				}
 
@@ -128,8 +136,7 @@ public class ProjectActivity extends ListActivity
 			}
 		});
 
-		final ListAdapter adapter = new SimpleAdapter(this, data,
-				R.layout.listing_entry, from, to);
+		final ListAdapter adapter = new FolderContentAdapter(this, data);
 		setListAdapter(adapter);
 	}
 }

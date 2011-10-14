@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:padding="10sp">
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:padding="5sp">
 
-	<TextView android:text="@+id/TextView03" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/listentry_name"
-		android:textSize="16sp"></TextView>
-	<TextView android:text="@+id/TextView01" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/listentry_description"
-		android:textSize="14sp"></TextView>
+	<ImageView android:id="@+id/listentry_image"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="20sp">
+	</ImageView>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:paddingLeft="5sp">
 
+
+		<TextView android:text="@+id/TextView03"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:id="@+id/listentry_name" android:textSize="16sp"></TextView>
+		<TextView android:text="@+id/TextView01"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:id="@+id/listentry_description" android:textSize="14sp"></TextView>
+	</LinearLayout>
 </LinearLayout> 

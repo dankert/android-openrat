@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -46,7 +47,10 @@ public class OpenRatBlog extends Activity
 		String response = null;
 		try
 		{
+			ProgressDialog dialog = ProgressDialog.show(OpenRatBlog.this,getResources().getString(R.string.loading),getResources().getString(R.string.waiting));
+
 			response = request.performRequest();
+			dialog.dismiss();
 
 		} catch (IOException e)
 		{

@@ -21,4 +21,14 @@
 	</string-array>
 	<string name="writable">Schreibzugriff</string>
 	<string name="version_summary">Server-Version</string>
+	
+	<string name="publish">Veröffentlichen</string>
+	<string name="properties">Eigenschaften</string>
+	<string name="loading">Warten auf Server</string>
+	<string name="waiting">Inhalt wird geladen</string>
+	<string name="language">Sprache</string>
+	<string name="model">Variante</string>
+	<string name="new1">Neu</string>
+	<string name="upload">Datei hochladen</string>
+	<string name="upload_image">Bild hochladen</string>
 </resources>
