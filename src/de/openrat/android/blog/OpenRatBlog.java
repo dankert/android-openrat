@@ -34,7 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import de.openrat.android.blog.client.CMSRequest;
+import de.openrat.client.CMSRequest;
 
 /**
  * @author Jan Dankert

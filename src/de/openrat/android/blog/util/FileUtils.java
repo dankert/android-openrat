@@ -15,6 +15,12 @@ import java.io.InputStream;
 public class FileUtils
 {
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
     public static byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
     

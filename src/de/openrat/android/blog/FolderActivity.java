@@ -37,8 +37,8 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
-import de.openrat.android.blog.client.CMSRequest;
 import de.openrat.android.blog.util.FileUtils;
+import de.openrat.client.CMSRequest;
 
 /**
  * @author dankert
