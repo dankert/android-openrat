@@ -1,3 +1,21 @@
+/*
+ * Openrat CMS-Client for Android
+ * 
+ * Copyright (C) 2011 Jan Dankert
+ * 
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.openrat.android.blog;
 
 import java.io.IOException;
@@ -18,6 +36,9 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import de.openrat.android.blog.client.CMSRequest;
 
+/**
+ * @author Jan Dankert
+ */
 public class OpenRatBlog extends Activity
 {
 	private static final String PREFS_NAME = "OR_BLOG_PREFS";
@@ -42,12 +63,14 @@ public class OpenRatBlog extends Activity
 		request.setParameter("action", "index");
 		request.setParameter("subaction", "login");
 		request.setParameter("dbid", "db1");
-		request.setParameter("login_name", prefs.getString("username",""));
-		request.setParameter("login_password", prefs.getString("password",""));
+		request.setParameter("login_name", prefs.getString("username", ""));
+		request.setParameter("login_password", prefs.getString("password", ""));
 		String response = null;
 		try
 		{
-			ProgressDialog dialog = ProgressDialog.show(OpenRatBlog.this,getResources().getString(R.string.loading),getResources().getString(R.string.waiting));
+			ProgressDialog dialog = ProgressDialog.show(OpenRatBlog.this,
+					getResources().getString(R.string.loading), getResources()
+							.getString(R.string.waiting));
 
 			response = request.performRequest();
 			dialog.dismiss();
@@ -77,15 +100,15 @@ public class OpenRatBlog extends Activity
 			tv.setText(msgText + "\nSitzung '" + sessionName + "': "
 					+ sessionId + "\nAusgabe: " + response);
 
-			
 			View connect = findViewById(R.id.connect);
-			connect.setOnClickListener( new OnClickListener() 
+			connect.setOnClickListener(new OnClickListener()
 			{
-				
+
 				@Override
 				public void onClick(View v)
 				{
-					Intent intent = new Intent(v.getContext(),ProjectActivity.class);
+					Intent intent = new Intent(v.getContext(),
+							ProjectActivity.class);
 					intent.putExtra(ProjectActivity.CLIENT, request);
 					startActivity(intent);
 				}
