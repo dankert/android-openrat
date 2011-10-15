@@ -26,13 +26,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -488,9 +490,9 @@ public class HTTPRequest implements Serializable
 			}
 
 			StringBuffer response = new StringBuffer();
+			
 			while (bufferedReader.ready())
 			{
-
 				response.append(bufferedReader.readLine() + "\n");
 			}
 			socket.close();
