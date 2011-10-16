@@ -59,7 +59,11 @@ public class ProjectActivity extends ListActivity
 		String response = null;
 		try
 		{
+			ProgressDialog dialog = ProgressDialog.show(ProjectActivity.this,
+					getResources().getString(R.string.loading), getResources()
+							.getString(R.string.waitingforprojects));
 			response = request.performRequest();
+			dialog.dismiss();
 
 		} catch (IOException e)
 		{
@@ -118,8 +122,7 @@ public class ProjectActivity extends ListActivity
 					ProgressDialog dialog = ProgressDialog.show(
 							ProjectActivity.this, getResources().getString(
 									R.string.loading), getResources()
-									.getString(R.string.waiting));
-					dialog.show();
+									.getString(R.string.waitingforlogin));
 					response = request.performRequest();
 					dialog.dismiss();
 

@@ -25,10 +25,17 @@
 	<string name="publish">Veröffentlichen</string>
 	<string name="properties">Eigenschaften</string>
 	<string name="loading">Warten auf Server</string>
-	<string name="waiting">Inhalt wird geladen</string>
+	<string name="waitingforcontent">Inhalt wird geladen</string>
+	<string name="waitingforprojects">Projekte werden geladen</string>
+	<string name="waitingforrootfolder">Einstiegsordner wird gesucht</string>
+	<string name="waitingforlogin">Anmeldung am Server</string>
 	<string name="language">Sprache</string>
 	<string name="model">Variante</string>
 	<string name="new1">Neu</string>
 	<string name="upload">Datei hochladen</string>
 	<string name="upload_image">Bild hochladen</string>
+	<string name="upload_ok">Hochladevorgang abgeschlossen</string>
+	<string name="upload_fail">Hochladevorgang fehlerhaft</string>
+	<string name="publish_ok">Wurde veröffentlicht</string>
+	<string name="publish_fail">Veröffentlichung nicht erfolgreich</string>
 </resources>

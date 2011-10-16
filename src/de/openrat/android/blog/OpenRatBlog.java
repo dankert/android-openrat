@@ -70,7 +70,7 @@ public class OpenRatBlog extends Activity
 		{
 			ProgressDialog dialog = ProgressDialog.show(OpenRatBlog.this,
 					getResources().getString(R.string.loading), getResources()
-							.getString(R.string.waiting));
+							.getString(R.string.waitingforlogin));
 
 			response = request.performRequest();
 			dialog.dismiss();
@@ -97,8 +97,8 @@ public class OpenRatBlog extends Activity
 
 			request.setCookie(sessionName, sessionId);
 			TextView tv = (TextView) findViewById(R.id.hello);
-			tv.setText(msgText + "\nSitzung '" + sessionName + "': "
-					+ sessionId + "\nAusgabe: " + response);
+			// tv.setText(msgText + "\nSitzung '" + sessionName + "': "
+			// + sessionId + "\nAusgabe: " + response);
 
 			View connect = findViewById(R.id.connect);
 			connect.setOnClickListener(new OnClickListener()

@@ -3,11 +3,8 @@
  */
 package de.openrat.android.blog;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -16,7 +13,11 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -47,6 +48,8 @@ import de.openrat.client.CMSRequest;
 public class FolderActivity extends ListActivity
 {
 
+	private static final int NOTIFICATION_UPLOAD = 1;
+	private static final int NOTIFICATION_PUBLISH = 2;
 	private static final String ID2 = "id";
 	public static final String CLIENT = "client";
 	private static final String NAME = "name";
@@ -116,7 +119,7 @@ public class FolderActivity extends ListActivity
 		{
 			ProgressDialog dialog = ProgressDialog.show(FolderActivity.this,
 					getResources().getString(R.string.loading), getResources()
-							.getString(R.string.waiting));
+							.getString(R.string.waitingforcontent));
 			// try
 			// {
 			// Thread.sleep(2000L);
@@ -259,17 +262,68 @@ public class FolderActivity extends ListActivity
 
 		case R.id.menu_publish:
 
-			// This is actually where the magic happens.
-
-			// As we use an adapter view (which the ListView is)
-
-			// We can cast item.getMenuInfo() to AdapterContextMenuInfo
-
 			menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
 			// To get the id of the clicked item in the list use menuInfo.id
-
 			entry = data.get(menuInfo.position);
+
+			request.clearParameters();
+			request.setAction(entry.type.name().toLowerCase());
+			request.setActionMethod("pub");
+
+			// Erstmal alles aktivieren was geht
+			// TODO: Abfrage der gewünschten Einstellungen über AlertDialog.
+			request.setParameter("subdirs", "1");
+			request.setParameter("pages", "1");
+			request.setParameter("files", "1");
+			String response = null;
+
+			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Intent notificationIntent = new Intent(this, FolderActivity.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+					notificationIntent, 0);
+
+			// the next two lines initialize the Notification, using the
+			// configurations above
+			Notification notification = new Notification(
+					R.drawable.publish, getResources().getString(
+							R.string.publish), System.currentTimeMillis());
+			notification.setLatestEventInfo(getApplicationContext(),
+					getResources().getString(R.string.publish), entry.name,
+					contentIntent);
+			notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+
+			nm.notify(NOTIFICATION_PUBLISH, notification);
+
+			try
+			{
+				Thread.sleep(10000);
+				response = request.performRequest();
+				JSONObject json = new JSONObject(response);
+
+			} catch (IOException e)
+			{
+				System.err.println(response);
+				System.err.println(e.getMessage());
+			} catch (JSONException e)
+			{
+				e.printStackTrace();
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			} finally
+			{
+				//notification.flags |= Notification.FLAG_NO_CLEAR;
+				
+				notification.setLatestEventInfo(getApplicationContext(),
+						getResources().getString(R.string.publish_ok), entry.name,
+						contentIntent);
+				notification.flags = 0;
+				nm.notify(NOTIFICATION_PUBLISH, notification);
+				//nm.cancel(NOTIFICATION_PUBLISH);
+			}
+
 			Toast.makeText(this, R.string.publish, Toast.LENGTH_SHORT);
 
 			return true;
@@ -364,7 +418,7 @@ public class FolderActivity extends ListActivity
 		{
 			if (resultCode == RESULT_OK)
 			{
-
+				// Upload durchführen
 				Uri uri = data.getData();
 
 				String filePath;
@@ -379,6 +433,13 @@ public class FolderActivity extends ListActivity
 
 				System.out.println(filePath);
 
+				NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+				Intent notificationIntent = new Intent(this,
+						FolderActivity.class);
+				PendingIntent contentIntent = PendingIntent.getActivity(this,
+						0, notificationIntent, 0);
+
 				request.clearParameters();
 				request.setAction("folder");
 				request.setActionMethod("createnewfile");
@@ -388,9 +449,23 @@ public class FolderActivity extends ListActivity
 				try
 				{
 					final File file = new File(filePath);
+
+					// the next two lines initialize the Notification, using the
+					// configurations above
+					Notification notification = new Notification(
+							R.drawable.upload, getResources().getString(
+									R.string.upload), System
+									.currentTimeMillis());
+					notification.setLatestEventInfo(getApplicationContext(),
+							getResources().getString(R.string.upload), file
+									.getName(), contentIntent);
+					notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+
+					nm.notify(NOTIFICATION_UPLOAD, notification);
+
 					byte[] fileBytes = FileUtils.getBytesFromFile(file);
-					request.setFile("file", fileBytes,
-							file.getName(), "image/jpeg", "binary");
+					request.setFile("file", fileBytes, file.getName(),
+							"image/jpeg", "binary");
 					// request.setFile("file", inputStream,file.length(),
 					// file.getName(), "image/jpeg", "binary");
 
@@ -403,6 +478,9 @@ public class FolderActivity extends ListActivity
 				{
 					e.printStackTrace();
 					throw new RuntimeException(e);
+				} finally
+				{
+					nm.cancel(NOTIFICATION_UPLOAD);
 				}
 			}
 		}
