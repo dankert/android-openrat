@@ -108,5 +108,15 @@ public class CMSRequest extends HTTPRequest implements Serializable
 	{
 		super.setParameter("subaction", methodName);
 	}
+	
+	/**
+	 * Setzt die Action-Methode.
+	 * 
+	 * @param id
+	 */
+	public void setId(String id)
+	{
+		super.setParameter("id", id);
+	}
 
 }
