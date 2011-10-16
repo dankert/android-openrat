@@ -18,7 +18,9 @@
 		<activity android:name="PageElementsActivity"></activity>
 		<activity android:name="PropertiesActivity"></activity>
 
-	</application>
+	<service android:name=".service.PublishIntentService"></service>
+<service android:name=".service.UploadIntentService"></service>
+</application>
 	
 	<uses-permission android:name="android.permission.INTERNET" />
 
