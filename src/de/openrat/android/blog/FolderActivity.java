@@ -6,6 +6,7 @@ package de.openrat.android.blog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +24,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
@@ -35,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
@@ -59,6 +62,7 @@ public class FolderActivity extends ListActivity
 	private static final int ACTIVITY_CHOOSE_IMAGE = 2;
 	private CMSRequest request;
 	private ArrayList<FolderEntry> data;
+	private String folderid;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -73,99 +77,126 @@ public class FolderActivity extends ListActivity
 		String[] from = new String[] { NAME, DESCRIPTION };
 		;
 		data = new ArrayList<FolderEntry>();
-
 		request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
 
-		//
-		String folderid = getIntent().getStringExtra("folderid");
-		String response = null;
-		if (folderid == null)
+		AsyncTask<String, Void, List<FolderEntry>> loadTask = new AsyncTask<String, Void, List<FolderEntry>>()
 		{
-			request.clearParameters();
-			request.setParameter("action", "tree");
-			request.setParameter("subaction", "load");
 
-			try
+			ProgressDialog dialog = new ProgressDialog(FolderActivity.this);
+
+			@Override
+			protected void onPreExecute()
 			{
-				response = request.performRequest();
-				System.out.println("Ordnerinhalt: " + response);
-				JSONObject json = new JSONObject(response);
-				folderid = json.getJSONArray("zeilen").getJSONObject(1)
-						.getString("name");
-				// JSONObject inhalte = json.getJSONObject("object");
-				// folderid = ...;
-
-			} catch (IOException e)
-			{
-				System.err.println("Fuck Folder");
-				System.err.println(response);
-				System.err.println(e.getMessage());
-			} catch (JSONException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		System.out.println("Folderid: " + folderid);
-
-		request.clearParameters();
-		request.setParameter("id", folderid);
-
-		request.setParameter("action", "folder");
-		request.setParameter("subaction", "show");
-
-		response = null;
-		try
-		{
-			ProgressDialog dialog = ProgressDialog.show(FolderActivity.this,
-					getResources().getString(R.string.loading), getResources()
-							.getString(R.string.waitingforcontent));
-			// try
-			// {
-			// Thread.sleep(2000L);
-			// } catch (InterruptedException e)
-			// {
-			// e.printStackTrace();
-			// }
-			response = request.performRequest();
-			System.out.println("Ordnerinhalt: " + response);
-			dialog.dismiss();
-
-		} catch (IOException e)
-		{
-			System.err.println("Fuck Folder");
-			System.err.println(response);
-			System.err.println(e.getMessage());
-		}
-
-		try
-		{
-			System.out.println(response);
-			JSONObject json = new JSONObject(response);
-			JSONObject inhalte = json.getJSONObject("object");
-			JSONArray names = inhalte.names();
-			for (int i = 0; i < names.length(); i++)
-			{
-				JSONObject obj = inhalte.getJSONObject(names.getString(i));
-
-				final FolderEntry entry = new FolderEntry();
-				entry.type = FType.valueOf(obj.getString("type").toUpperCase());
-				entry.name = obj.getString("name");
-				entry.description = obj.getString("desc");
-				entry.id = names.getString(i);
-				data.add(entry);
-
+				dialog.setTitle(getResources().getString(R.string.loading));
+				dialog.setMessage(getResources().getString(
+						R.string.waitingforcontent));
+				dialog.show();
 			}
 
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+			protected void onPostExecute(List<FolderEntry> result)
+			{
+				dialog.dismiss();
 
+				final ListAdapter adapter = new FolderContentAdapter(
+						FolderActivity.this, data);
+				setListAdapter(adapter);
+			};
+
+			@Override
+			protected List<FolderEntry> doInBackground(String... params)
+			{
+				//
+				folderid = getIntent().getStringExtra("folderid");
+				String response = null;
+				if (folderid == null)
+				{
+					request.clearParameters();
+					request.setParameter("action", "tree");
+					request.setParameter("subaction", "load");
+
+					try
+					{
+						response = request.performRequest();
+						System.out.println("Ordnerinhalt: " + response);
+						JSONObject json = new JSONObject(response);
+						folderid = json.getJSONArray("zeilen").getJSONObject(1)
+								.getString("name");
+						// JSONObject inhalte = json.getJSONObject("object");
+						// folderid = ...;
+
+					} catch (IOException e)
+					{
+						System.err.println("Fuck Folder");
+						System.err.println(response);
+						System.err.println(e.getMessage());
+					} catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				System.out.println("Folderid: " + folderid);
+
+				request.clearParameters();
+				request.setParameter("id", folderid);
+
+				request.setParameter("action", "folder");
+				request.setParameter("subaction", "show");
+
+				response = null;
+				try
+				{
+
+					// try
+					// {
+					// Thread.sleep(2000L);
+					// } catch (InterruptedException e)
+					// {
+					// e.printStackTrace();
+					// }
+					response = request.performRequest();
+					System.out.println("Ordnerinhalt: " + response);
+					dialog.dismiss();
+
+				} catch (IOException e)
+				{
+					System.err.println("Fuck Folder");
+					System.err.println(response);
+					System.err.println(e.getMessage());
+				}
+
+				try
+				{
+					System.out.println(response);
+					JSONObject json = new JSONObject(response);
+					JSONObject inhalte = json.getJSONObject("object");
+					JSONArray names = inhalte.names();
+					for (int i = 0; i < names.length(); i++)
+					{
+						JSONObject obj = inhalte.getJSONObject(names
+								.getString(i));
+
+						final FolderEntry entry = new FolderEntry();
+						entry.type = FType.valueOf(obj.getString("type")
+								.toUpperCase());
+						entry.name = obj.getString("name");
+						entry.description = obj.getString("desc");
+						entry.id = names.getString(i);
+						data.add(entry);
+
+					}
+
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				return data;
+			}
+		};
+
+		loadTask.execute();
 		// final ListAdapter adapter = new SimpleAdapter(this, data,
 		// R.layout.listing_entry, from, to);
-		final ListAdapter adapter = new FolderContentAdapter(this, data);
-		setListAdapter(adapter);
 
 		ListView list = getListView();
 
@@ -260,6 +291,70 @@ public class FolderActivity extends ListActivity
 			startActivity(intent);
 			return true;
 
+		case R.id.menu_delete:
+
+			final AdapterContextMenuInfo mInfo = (AdapterView.AdapterContextMenuInfo) item
+					.getMenuInfo();
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Sicher?").setCancelable(false)
+					.setPositiveButton(
+							getResources().getString(R.string.delete),
+							new DialogInterface.OnClickListener()
+							{
+								public void onClick(DialogInterface dialog,
+										int id)
+								{
+									// To get the id of the clicked item in the
+									// list use menuInfo.id
+									FolderEntry en = data.get(mInfo.position);
+
+									request.clearParameters();
+									request.trace=true;
+									request.setMethod("POST");
+									request.setAction("folder");
+									request.setActionMethod("multiple");
+									request.setId(folderid);
+
+
+									request.setParameter("type", "delete");
+									request.setParameter("ids", en.id);
+									// Erstmal alles aktivieren was geht
+									// TODO: Abfrage der gewünschten
+									// Einstellungen über AlertDialog.
+									request.setParameter("commit", "1");
+									String response = null;
+
+									// the next two lines initialize the
+									// Notification, using the
+									// configurations above
+
+									try
+									{
+										response = request.performRequest();
+										JSONObject json = new JSONObject(
+												response);
+										System.out.println("nachlöschen: "
+												+ response);
+
+									} catch (IOException e)
+									{
+										// System.err.println(response);
+										System.err.println(e.getMessage());
+									} catch (JSONException e)
+									{
+										e.printStackTrace();
+									} finally
+									{
+									}
+									;
+								}
+							});
+			AlertDialog alert = builder.create();
+			alert.show();
+
+			return true;
+
 		case R.id.menu_publish:
 
 			menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -286,13 +381,14 @@ public class FolderActivity extends ListActivity
 
 			// the next two lines initialize the Notification, using the
 			// configurations above
-			Notification notification = new Notification(
-					R.drawable.publish, getResources().getString(
-							R.string.publish), System.currentTimeMillis());
+			Notification notification = new Notification(R.drawable.publish,
+					getResources().getString(R.string.publish), System
+							.currentTimeMillis());
 			notification.setLatestEventInfo(getApplicationContext(),
 					getResources().getString(R.string.publish), entry.name,
 					contentIntent);
-			notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+			notification.flags = Notification.FLAG_ONGOING_EVENT
+					| Notification.FLAG_NO_CLEAR;
 
 			nm.notify(NOTIFICATION_PUBLISH, notification);
 
@@ -314,14 +410,14 @@ public class FolderActivity extends ListActivity
 				e.printStackTrace();
 			} finally
 			{
-				//notification.flags |= Notification.FLAG_NO_CLEAR;
-				
+				// notification.flags |= Notification.FLAG_NO_CLEAR;
+
 				notification.setLatestEventInfo(getApplicationContext(),
-						getResources().getString(R.string.publish_ok), entry.name,
-						contentIntent);
+						getResources().getString(R.string.publish_ok),
+						entry.name, contentIntent);
 				notification.flags = 0;
 				nm.notify(NOTIFICATION_PUBLISH, notification);
-				//nm.cancel(NOTIFICATION_PUBLISH);
+				// nm.cancel(NOTIFICATION_PUBLISH);
 			}
 
 			Toast.makeText(this, R.string.publish, Toast.LENGTH_SHORT);
@@ -469,7 +565,14 @@ public class FolderActivity extends ListActivity
 					// request.setFile("file", inputStream,file.length(),
 					// file.getName(), "image/jpeg", "binary");
 
+					ProgressDialog dialog = ProgressDialog.show(
+							FolderActivity.this, getResources().getString(
+									R.string.loading), getResources()
+									.getString(R.string.waitingforlogin));
+
 					String response = request.performRequest();
+					dialog.dismiss();
+
 					// String response = request.performRequest("TEST TEST");
 					System.out.println("nach dem Hochladen" + response);
 					Toast.makeText(this, R.string.publish, Toast.LENGTH_SHORT);
