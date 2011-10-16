@@ -5,6 +5,7 @@ package de.openrat.android.blog;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,14 +68,9 @@ public class FolderActivity extends ListActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		setContentView(R.layout.listing);
-		setTitle(R.string.connect);
 
 		super.onCreate(savedInstanceState);
 
-		int[] to = new int[] { R.id.listentry_name, R.id.listentry_description };
-		;
-		String[] from = new String[] { NAME, DESCRIPTION };
-		;
 		data = new ArrayList<FolderEntry>();
 		request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
 
@@ -369,14 +365,18 @@ public class FolderActivity extends ListActivity
 						.getMenuInfo();
 				entry = data.get(menuInfo.position);
 
-				final Intent publishIntent = new Intent(this,PublishIntentService.class);
+				final Intent publishIntent = new Intent(this,
+						PublishIntentService.class);
 
-				publishIntent.putExtra(PublishIntentService.EXTRA_REQUEST,request);
-				publishIntent.putExtra(PublishIntentService.EXTRA_TYPE,entry.type.name().toLowerCase());
-				publishIntent.putExtra(PublishIntentService.EXTRA_NAME,entry.name);
-				publishIntent.putExtra(PublishIntentService.EXTRA_ID,entry.id);
+				publishIntent.putExtra(PublishIntentService.EXTRA_REQUEST,
+						request);
+				publishIntent.putExtra(PublishIntentService.EXTRA_TYPE,
+						entry.type.name().toLowerCase());
+				publishIntent.putExtra(PublishIntentService.EXTRA_NAME,
+						entry.name);
+				publishIntent.putExtra(PublishIntentService.EXTRA_ID, entry.id);
 				startService(publishIntent);
-				
+
 				Toast.makeText(this, R.string.publish, Toast.LENGTH_SHORT);
 
 				return true;
@@ -447,12 +447,20 @@ public class FolderActivity extends ListActivity
 				return true;
 			case R.id.menu_upload_image:
 
-				// Intent chooseFile;
-				// Intent intent;
 				chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
 				chooseFile.setType("image/*");
 				intent = Intent.createChooser(chooseFile, "Choose an image");
 				startActivityForResult(intent, ACTIVITY_CHOOSE_IMAGE);
+				return true;
+
+			case R.id.menu_newfolder:
+			case R.id.menu_newpage:
+
+				intent = new Intent(this, NewActivity.class);
+				intent.putExtra("request", getIntent().getSerializableExtra(
+						"request"));
+				intent.putExtra("menuid", item.getItemId());
+				startActivity(intent);
 				return true;
 
 			default:
@@ -487,8 +495,8 @@ public class FolderActivity extends ListActivity
 							filePath = uri.getPath();
 						}
 
-						final Intent uploadIntent = new Intent(FolderActivity.this,
-								UploadIntentService.class);
+						final Intent uploadIntent = new Intent(
+								FolderActivity.this, UploadIntentService.class);
 						uploadIntent.putExtra(
 								UploadIntentService.EXTRA_FILENAME, filePath);
 						uploadIntent.putExtra(

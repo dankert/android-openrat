@@ -41,7 +41,6 @@ public class ProjectActivity extends ListActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		setContentView(R.layout.listing);
-		setTitle(R.string.connect);
 
 		super.onCreate(savedInstanceState);
 

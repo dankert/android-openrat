@@ -1,8 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/menu_language" android:title="@string/language" android:icon="@android:drawable/ic_menu_mapmode"></item>
-	<item android:id="@+id/menu_model" android:title="@string/model" android:icon="@android:drawable/ic_menu_set_as"></item>
-	<item android:id="@+id/menu_new" android:title="@string/new1" android:icon="@android:drawable/ic_menu_add"></item>
-	<item android:id="@+id/menu_upload" android:title="@string/upload" android:icon="@android:drawable/ic_menu_save"></item>
-	<item android:id="@+id/menu_upload_image" android:title="@string/upload_image" android:icon="@android:drawable/ic_menu_gallery"></item> 
+	<item android:id="@+id/menu_language" android:title="@string/language"
+		android:icon="@android:drawable/ic_menu_mapmode"></item>
+	<item android:id="@+id/menu_model" android:title="@string/model"
+		android:icon="@android:drawable/ic_menu_set_as"></item>
+	<item android:id="@+id/menu_new" android:title="@string/new1"
+		android:icon="@android:drawable/ic_menu_add">
+		<menu>
+			<item android:id="@+id/menu_newpage" android:title="@string/new_page"
+				android:icon="@android:drawable/ic_menu_add" />
+			<item android:id="@+id/menu_newfolder" android:title="@string/new_folder"
+				android:icon="@android:drawable/ic_menu_add" />
+		</menu>
+	</item>
+
+	<item  android:title="@string/upload" android:icon="@android:drawable/ic_menu_upload">
+		<menu>
+			<item android:id="@+id/menu_upload" android:title="@string/upload_file"
+				android:icon="@android:drawable/ic_menu_save"></item>
+			<item android:id="@+id/menu_upload_image" android:title="@string/upload_image"
+				android:icon="@android:drawable/ic_menu_gallery"></item>
+		</menu>
+	</item>
 </menu>
  
