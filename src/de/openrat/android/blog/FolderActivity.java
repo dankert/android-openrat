@@ -45,6 +45,7 @@ import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.service.PublishIntentService;
 import de.openrat.android.blog.service.UploadIntentService;
 import de.openrat.client.CMSRequest;
+import de.openrat.client.OpenRatClient;
 
 /**
  * @author dankert
@@ -60,8 +61,8 @@ public class FolderActivity extends ListActivity
 	private static final String DESCRIPTION = "description";
 	private static final int ACTIVITY_CHOOSE_FILE = 1;
 	private static final int ACTIVITY_CHOOSE_IMAGE = 2;
-	private CMSRequest request;
-	private ArrayList<FolderEntry> data;
+	private OpenRatClient client;
+	private List<FolderEntry> data;
 	private String folderid;
 
 	@Override
@@ -72,7 +73,7 @@ public class FolderActivity extends ListActivity
 		super.onCreate(savedInstanceState);
 
 		data = new ArrayList<FolderEntry>();
-		request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
+		client = (OpenRatClient) getIntent().getSerializableExtra(CLIENT);
 
 		AsyncTask<String, Void, List<FolderEntry>> loadTask = new AsyncTask<String, Void, List<FolderEntry>>()
 		{
@@ -102,93 +103,16 @@ public class FolderActivity extends ListActivity
 			{
 				//
 				folderid = getIntent().getStringExtra("folderid");
-				String response = null;
-				if (folderid == null)
-				{
-					request.clearParameters();
-					request.setParameter("action", "tree");
-					request.setParameter("subaction", "load");
 
-					try
-					{
-						response = request.performRequest();
-						System.out.println("Ordnerinhalt: " + response);
-						JSONObject json = new JSONObject(response);
-						folderid = json.getJSONArray("zeilen").getJSONObject(1)
-								.getString("name");
-						// JSONObject inhalte = json.getJSONObject("object");
-						// folderid = ...;
-
-					}
-					catch (IOException e)
-					{
-						System.err.println("Fuck Folder");
-						System.err.println(response);
-						System.err.println(e.getMessage());
-					}
-					catch (JSONException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				System.out.println("Folderid: " + folderid);
-
-				request.clearParameters();
-				request.setParameter("id", folderid);
-
-				request.setParameter("action", "folder");
-				request.setParameter("subaction", "show");
-
-				response = null;
 				try
 				{
-
-					// try
-					// {
-					// Thread.sleep(2000L);
-					// } catch (InterruptedException e)
-					// {
-					// e.printStackTrace();
-					// }
-					response = request.performRequest();
-					System.out.println("Ordnerinhalt: " + response);
-					dialog.dismiss();
-
+					data = client.getFolderEntries(folderid);
 				}
 				catch (IOException e)
 				{
-					System.err.println("Fuck Folder");
-					System.err.println(response);
-					System.err.println(e.getMessage());
+					Toast.makeText(FolderActivity.this,e.getMessage(),Toast.LENGTH_SHORT);
 				}
-
-				try
-				{
-					System.out.println(response);
-					JSONObject json = new JSONObject(response);
-					JSONObject inhalte = json.getJSONObject("object");
-					JSONArray names = inhalte.names();
-					for (int i = 0; i < names.length(); i++)
-					{
-						JSONObject obj = inhalte.getJSONObject(names
-								.getString(i));
-
-						final FolderEntry entry = new FolderEntry();
-						entry.type = FType.valueOf(obj.getString("type")
-								.toUpperCase());
-						entry.name = obj.getString("name");
-						entry.description = obj.getString("desc");
-						entry.id = names.getString(i);
-						data.add(entry);
-
-					}
-
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				
 				return data;
 			}
 		};
@@ -215,14 +139,14 @@ public class FolderActivity extends ListActivity
 
 						intent = new Intent(FolderActivity.this,
 								FolderActivity.class);
-						intent.putExtra(CLIENT, request);
+						intent.putExtra(CLIENT, client);
 						intent.putExtra("folderid", entry.id);
 						startActivity(intent);
 						break;
 					case PAGE:
 						intent = new Intent(FolderActivity.this,
 								PageElementsActivity.class);
-						intent.putExtra(CLIENT, request);
+						intent.putExtra(CLIENT, client);
 						intent.putExtra("pageid", entry.id);
 						startActivity(intent);
 					default:
@@ -285,7 +209,7 @@ public class FolderActivity extends ListActivity
 				final Intent intent;
 				intent = new Intent(FolderActivity.this,
 						PropertiesActivity.class);
-				intent.putExtra(CLIENT, request);
+				intent.putExtra(CLIENT, client);
 				intent.putExtra("objectid", entry.id);
 				intent.putExtra(TYP, entry.type);
 				startActivity(intent);
@@ -311,19 +235,19 @@ public class FolderActivity extends ListActivity
 										FolderEntry en = data
 												.get(mInfo.position);
 
-										request.clearParameters();
-										request.trace = true;
-										request.setMethod("POST");
-										request.setAction("folder");
-										request.setActionMethod("multiple");
-										request.setId(folderid);
+										client.clearParameters();
+										client.trace = true;
+										client.setMethod("POST");
+										client.setAction("folder");
+										client.setActionMethod("multiple");
+										client.setId(folderid);
 
-										request.setParameter("type", "delete");
-										request.setParameter("ids", en.id);
+										client.setParameter("type", "delete");
+										client.setParameter("ids", en.id);
 										// Erstmal alles aktivieren was geht
 										// TODO: Abfrage der gewünschten
 										// Einstellungen über AlertDialog.
-										request.setParameter("commit", "1");
+										client.setParameter("commit", "1");
 										String response = null;
 
 										// the next two lines initialize the
@@ -332,7 +256,7 @@ public class FolderActivity extends ListActivity
 
 										try
 										{
-											response = request.performRequest();
+											response = client.performRequest();
 											JSONObject json = new JSONObject(
 													response);
 											System.out.println("nachlöschen: "
@@ -369,7 +293,7 @@ public class FolderActivity extends ListActivity
 						PublishIntentService.class);
 
 				publishIntent.putExtra(PublishIntentService.EXTRA_REQUEST,
-						request);
+						client);
 				publishIntent.putExtra(PublishIntentService.EXTRA_TYPE,
 						entry.type.name().toLowerCase());
 				publishIntent.putExtra(PublishIntentService.EXTRA_NAME,
@@ -500,7 +424,7 @@ public class FolderActivity extends ListActivity
 						uploadIntent.putExtra(
 								UploadIntentService.EXTRA_FILENAME, filePath);
 						uploadIntent.putExtra(
-								UploadIntentService.EXTRA_REQUEST, request);
+								UploadIntentService.EXTRA_REQUEST, client);
 						startService(uploadIntent);
 
 						Toast.makeText(this, R.string.publish,

@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import de.openrat.client.CMSRequest;
+import de.openrat.client.OpenRatClient;
 
 /**
  * @author Jan Dankert
@@ -58,7 +59,7 @@ public class OpenRatBlog extends Activity
 		int port = Integer.parseInt(prefs.getString("port", "80"));
 		String path = prefs.getString("path", "/");
 		String host = prefs.getString("hostname", "");
-		request = new CMSRequest(host, path, port);
+		request = new OpenRatClient(host, path, port);
 
 		request.setParameter("action", "index");
 		request.setParameter("subaction", "login");
