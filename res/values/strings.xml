@@ -46,9 +46,9 @@
 	<string name="filename">Dateiname</string>
 	<string name="template">Vorlage</string>
 	<string name="save">Speichern</string>
-	<string name="project_list">Projetliste</string>
-	<string name="folder_content">Ordnerinhalt</string>
+	<string name="project_list">Projekte</string>
+	<string name="folder_content">Ordner</string>
 	<string name="folder_properties">Eigenschaften</string>
-	<string name="page_content">Seiteninhalt</string>
-	<string name="editor">Inhalt bearbeiten</string>
+	<string name="page_content">Seite</string>
+	<string name="editor">Inhalt</string>
 </resources>

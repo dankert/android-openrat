@@ -1,5 +1,6 @@
 package de.openrat.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 
 import de.openrat.android.blog.FolderEntry;
 import de.openrat.android.blog.FolderEntry.FType;
+import de.openrat.android.blog.util.FileUtils;
 
 /**
  * Komfortabler Zugriff auf das OpenRat-CMS.
@@ -63,7 +65,8 @@ public class OpenRatClient extends CMSRequest
 	 *            Rootfolder geladen.
 	 * @return Ordner-Einträge
 	 */
-	public List<FolderEntry> getFolderEntries(String folderid) throws IOException
+	public List<FolderEntry> getFolderEntries(String folderid)
+			throws IOException
 	{
 		if (folderid == null)
 		{
@@ -125,7 +128,6 @@ public class OpenRatClient extends CMSRequest
 
 	protected JSONObject readJSON() throws OpenRatClientException
 	{
-
 		String response;
 		try
 		{
@@ -139,9 +141,21 @@ public class OpenRatClient extends CMSRequest
 
 		try
 		{
-			return new JSONObject(response);
-			// TODO: Notices und Errors aus dem JSON-Dokument auswerten und ggf.
-			// Exception werfen.
+			final JSONObject json = new JSONObject(response);
+
+			try
+			{
+				// Versuchen, die 1. Notice zu lesen. Falls es eine gibt, Exception mit dem Notice-Text werfen.
+				final String msgText = json.getJSONArray("notices")
+						.getJSONObject(0).getString("text");
+				throw new OpenRatClientException(msgText);
+			}
+			catch (JSONException e)
+			{
+				// Keine Notice gefunden. Das deutet auf eine fehlerfreie Ausführung hin :)
+				return json;
+			}
+
 		}
 		catch (JSONException e)
 		{
@@ -201,6 +215,92 @@ public class OpenRatClient extends CMSRequest
 		public Throwable getCause()
 		{
 			return this.cause;
+		}
+
+	}
+
+	/**
+	 * @throws IOException
+	 * 
+	 */
+	public void uploadFile(String filenName, File file) throws IOException
+	{
+
+		super.clearParameters();
+		super.setAction("folder");
+		super.setActionMethod("createnewfile");
+		super.setMethod("POST");
+
+		byte[] fileBytes;
+		try
+		{
+			fileBytes = FileUtils.getBytesFromFile(file);
+		}
+		catch (IOException e)
+		{
+			throw new OpenRatClientException(e);
+		}
+		super.setFile(filenName, fileBytes, file.getName(), "image/jpeg",
+				"binary");
+
+		@SuppressWarnings("unused")
+		final JSONObject response = readJSON();
+	}
+
+	/**
+	 * @param type
+	 *            Typ
+	 * @param id
+	 *            Id
+	 * @throws IOException
+	 */
+	public void publish(String type, String id) throws IOException
+	{
+
+		super.clearParameters();
+		super.setAction(type);
+		super.setActionMethod("pub");
+		super.setId(id);
+
+		// Erstmal alles aktivieren was geht
+		// TODO: Abfrage der gewünschten Einstellungen über AlertDialog.
+		super.setParameter("subdirs", "1");
+		super.setParameter("pages", "1");
+		super.setParameter("files", "1");
+
+		@SuppressWarnings("unused")
+		JSONObject response = readJSON();
+	}
+
+	public void login(String login, String password) throws IOException
+	{
+		super.setParameter("action", "index");
+		super.setParameter("subaction", "login");
+		super.setParameter("dbid", "db1");
+		super.setParameter("login_name", login);
+		super.setParameter("login_password", password);
+
+		JSONObject json = readJSON();
+		JSONObject session;
+		try
+		{
+			session = json.getJSONObject("session");
+			final String sessionName = session.getString("name");
+			final String sessionId = session.getString("id");
+			setCookie(sessionName, sessionId);
+		}
+		catch (JSONException e)
+		{
+			try
+			{
+				final String msgText = json.getJSONArray("notices")
+						.getJSONObject(0).getString("text");
+				throw new OpenRatClientException(msgText, e);
+			}
+			catch (JSONException e1)
+			{
+				throw new OpenRatClientException(e);
+			}
 		}
 
 	}

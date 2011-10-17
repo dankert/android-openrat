@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import de.openrat.client.CMSRequest;
+import de.openrat.client.OpenRatClient;
 
 public class NewActivity extends Activity
 {
 
-	private CMSRequest request;
+	private OpenRatClient request;
 	private int menuid;
 
 	/**
@@ -21,7 +22,7 @@ public class NewActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		request = (CMSRequest) getIntent().getSerializableExtra("request");
+		request = (OpenRatClient) getIntent().getSerializableExtra("request");
 		menuid = getIntent().getIntExtra("menuid", 0);
 
 		setContentView(R.layout.new1);

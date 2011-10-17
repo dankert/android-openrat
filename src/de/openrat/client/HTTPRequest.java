@@ -27,14 +27,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -358,6 +355,7 @@ public class HTTPRequest implements Serializable
 
 			socket.setKeepAlive(false);
 			socket.setReuseAddress(false);
+			socket.setSoTimeout(5000);
 			socket.connect(socketAddress, 5000);
 
 			final StringBuffer header = new StringBuffer();
@@ -495,7 +493,6 @@ public class HTTPRequest implements Serializable
 			{
 				response.append(bufferedReader.readLine() + "\n");
 			}
-			socket.close();
 
 			if (this.trace)
 				System.out.println("--- response body ---");

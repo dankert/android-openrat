@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import de.openrat.client.CMSRequest;
 import de.openrat.client.OpenRatClient;
 
@@ -43,7 +44,7 @@ import de.openrat.client.OpenRatClient;
 public class OpenRatBlog extends Activity
 {
 	private static final String PREFS_NAME = "OR_BLOG_PREFS";
-	private CMSRequest request;
+	private OpenRatClient client;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -51,82 +52,54 @@ public class OpenRatBlog extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		setTitle(R.string.app_name);
 
-		SharedPreferences prefs = PreferenceManager
+		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
 		int port = Integer.parseInt(prefs.getString("port", "80"));
 		String path = prefs.getString("path", "/");
 		String host = prefs.getString("hostname", "");
-		request = new OpenRatClient(host, path, port);
 
-		request.setParameter("action", "index");
-		request.setParameter("subaction", "login");
-		request.setParameter("dbid", "db1");
-		request.setParameter("login_name", prefs.getString("username", ""));
-		request.setParameter("login_password", prefs.getString("password", ""));
-		String response = null;
-		try
+		client = new OpenRatClient(host, path, port);
+
+		@SuppressWarnings("unused")
+		TextView tv = (TextView) findViewById(R.id.hello);
+
+		View connect = findViewById(R.id.connect);
+		connect.setOnClickListener(new OnClickListener()
 		{
-			ProgressDialog dialog = ProgressDialog.show(OpenRatBlog.this,
-					getResources().getString(R.string.loading), getResources()
-							.getString(R.string.waitingforlogin));
 
-			response = request.performRequest();
-			dialog.dismiss();
-
-		} catch (IOException e)
-		{
-			response = e.getMessage();
-		}
-
-		try
-		{
-			JSONObject json = new JSONObject(response);
-			JSONObject session = json.getJSONObject("session");
-			final String sessionName = session.getString("name");
-			final String sessionId = session.getString("id");
-
-			final String msgText = json.getJSONArray("notices")
-					.getJSONObject(0).getString("text");
-			// final String msgText2 = json.getJSONArray("notics")
-			// .getJSONObject(0).getString("text");
-
-			// TextView text = new TextView(this);
-			// text.setText("Sitzung '" + sessionId + "': " + sessionId);
-
-			request.setCookie(sessionName, sessionId);
-			TextView tv = (TextView) findViewById(R.id.hello);
-			// tv.setText(msgText + "\nSitzung '" + sessionName + "': "
-			// + sessionId + "\nAusgabe: " + response);
-
-			View connect = findViewById(R.id.connect);
-			connect.setOnClickListener(new OnClickListener()
+			@Override
+			public void onClick(View v)
 			{
-
-				@Override
-				public void onClick(View v)
+				try
 				{
-					Intent intent = new Intent(v.getContext(),
+					final ProgressDialog dialog = ProgressDialog.show(
+							OpenRatBlog.this, getResources().getString(
+									R.string.loading), getResources()
+									.getString(R.string.waitingforlogin));
+
+					client.login(prefs.getString("username", ""), prefs
+							.getString("password", ""));
+
+					dialog.dismiss();
+
+					// Verbindung und Login waren erfolgreich.
+					// Jetzt zur Projekt-Liste wechseln.
+					final Intent intent = new Intent(v.getContext(),
 							ProjectActivity.class);
-					intent.putExtra(ProjectActivity.CLIENT, request);
+					intent.putExtra(ProjectActivity.CLIENT, client);
 					startActivity(intent);
 				}
-			});
+				catch (IOException e1)
+				{
+					// Verbindung nicht möglich...
+					Toast.makeText(OpenRatBlog.this, e1.getMessage(),
+							Toast.LENGTH_LONG);
+				}
 
-		} catch (Exception e)
-		{
-			response = e.getMessage();
-
-			TextView tv = (TextView) findViewById(R.id.hello);
-			tv.setText("Fehler: " + response);
-
-		}
-
-		// Restore preferences
-		// SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		// boolean silent = settings.getBoolean("silentMode", false);
+			}
+		});
 
 	}
 
@@ -144,8 +117,8 @@ public class OpenRatBlog extends Activity
 	{
 		switch (item.getItemId())
 		{
-		case R.id.menu_preferences:
-			startActivity(new Intent(this, Configuration.class));
+			case R.id.menu_preferences:
+				startActivity(new Intent(this, Configuration.class));
 		}
 		return false;
 	}

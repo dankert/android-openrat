@@ -12,10 +12,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import de.openrat.android.blog.FolderActivity;
 import de.openrat.android.blog.R;
-import de.openrat.android.blog.util.FileUtils;
-import de.openrat.client.CMSRequest;
+import de.openrat.client.OpenRatClient;
 
 /**
  * @author dankert
@@ -43,61 +43,49 @@ public class UploadIntentService extends IntentService
 	protected void onHandleIntent(Intent intent)
 	{
 		final String filePath = intent.getStringExtra(EXTRA_FILENAME);
-		final CMSRequest request = (CMSRequest) intent
+		final OpenRatClient client = (OpenRatClient) intent
 				.getSerializableExtra(EXTRA_REQUEST);
 
-		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		Intent notificationIntent = new Intent(this, FolderActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+		final Intent notificationIntent = new Intent(this, FolderActivity.class);
+		final PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 
-		request.clearParameters();
-		request.setAction("folder");
-		request.setActionMethod("createnewfile");
-		request.setMethod("POST");
-		request.trace = true;
-
-		final Notification notification = new Notification(R.drawable.upload,
+		final Notification notification = new Notification(R.drawable.logo,
 				getResources().getString(R.string.upload), System
 						.currentTimeMillis());
 		notification.setLatestEventInfo(getApplicationContext(), getResources()
 				.getString(R.string.upload_ok), filePath, contentIntent);
-
+		notification.flags |= Notification.FLAG_NO_CLEAR;
 		nm.notify(NOTIFICATION_UPLOAD, notification);
+		
 		try
 		{
 			final File file = new File(filePath);
 
+			client.uploadFile(EXTRA_FILENAME,file);
+
+			// Alles OK.
+			final String msgText = getResources().getString(R.string.upload_ok);
 			notification.setLatestEventInfo(getApplicationContext(),
-					getResources().getString(R.string.upload), file.getName(),
-					contentIntent);
-			notification.flags |= Notification.FLAG_NO_CLEAR;
-
-			byte[] fileBytes = FileUtils.getBytesFromFile(file);
-			request.setFile(EXTRA_FILENAME, fileBytes, file.getName(),
-					"image/jpeg", "binary");
-
-			String response = request.performRequest();
-
-			System.out.println("nach dem Hochladen" + response);
-
-			notification.setLatestEventInfo(getApplicationContext(),
-					getResources().getString(R.string.upload_ok), file
+					msgText, file
 							.getName(), contentIntent);
-			notification.flags = 0;
+			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			nm.notify(NOTIFICATION_UPLOAD, notification);
+			Log.d(this.getClass().getName(), msgText);
 		}
 		catch (IOException e)
 		{
+			// Fehler ist aufgetreten.
+			final String msgText = getResources().getString(R.string.upload_fail);
 			notification.setLatestEventInfo(getApplicationContext(),
-					getResources().getString(R.string.upload_fail), "",
+					msgText, e.getMessage(),
 					contentIntent);
-			notification.flags = 0;
+			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			nm.notify(NOTIFICATION_UPLOAD, notification);
 
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			Log.e(this.getClass().getName(), msgText, e);
 		}
 		finally
 		{
