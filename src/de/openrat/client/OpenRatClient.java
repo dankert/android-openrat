@@ -2,12 +2,15 @@ package de.openrat.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 import de.openrat.android.blog.FolderEntry;
 import de.openrat.android.blog.FolderEntry.FType;
@@ -133,6 +136,11 @@ public class OpenRatClient extends CMSRequest
 		{
 			response = super.performRequest();
 		}
+		catch (SocketTimeoutException e)
+		{
+			throw new OpenRatClientException(
+					"Timeout exceeded", e);
+		}
 		catch (IOException e)
 		{
 			throw new OpenRatClientException(
@@ -145,15 +153,32 @@ public class OpenRatClient extends CMSRequest
 
 			try
 			{
-				// Versuchen, die 1. Notice zu lesen. Falls es eine gibt, Exception mit dem Notice-Text werfen.
-				final String msgText = json.getJSONArray("notices")
-						.getJSONObject(0).getString("text");
-				throw new OpenRatClientException(msgText);
+				// Versuchen, die 1. Notice zu lesen. Falls es eine gibt,
+				// Exception mit dem Notice-Text werfen.
+				final String status = json.getString("notice_status");
+
+				if (!status.equalsIgnoreCase("ok"))
+				{
+					String msgText;
+					try
+					{
+						msgText = json.getJSONArray("notices").getJSONObject(0)
+								.getString("text");
+					}
+					catch (JSONException e)
+					{
+						msgText = "Not OK (Server response does not include \"OK\" and does not include a notice text";
+					}
+					throw new OpenRatClientException(msgText);
+				}
+				else
+					return json; // Alles OK.
 			}
 			catch (JSONException e)
 			{
-				// Keine Notice gefunden. Das deutet auf eine fehlerfreie Ausführung hin :)
-				return json;
+				// throw new OpenRatClientException(
+				// "Server error: Response does not include a attribute 'notice_status'.\n"+response);
+				return json; // Alles OK, kann passieren, wenn es keine Notices gibt.
 			}
 
 		}
@@ -302,6 +327,59 @@ public class OpenRatClient extends CMSRequest
 				throw new OpenRatClientException(e);
 			}
 		}
+	}
 
+	public List<FolderEntry> loadProjects() throws IOException
+	{
+
+		List<FolderEntry> data = new ArrayList<FolderEntry>();
+
+		super.clearParameters();
+		super.setParameter("action", "index");
+		super.setParameter("subaction", "projectmenu");
+		JSONObject json = readJSON();
+
+		try
+		{
+			JSONArray projects = json.getJSONArray("projects");
+
+			for (int i = 0; i < projects.length(); i++)
+			{
+				JSONObject project = projects.getJSONObject(i);
+
+				final FolderEntry entry = new FolderEntry();
+				entry.type = FType.PROJECT;
+				entry.name = project.getString("name");
+				entry.description = "";
+				entry.id = project.getString("id");
+
+				data.add(entry);
+
+			}
+		}
+		catch (JSONException e)
+		{
+			Log.e(this.getClass().getName(), e.getMessage(), e);
+		}
+
+		return data;
+	}
+
+	/**
+	 * Wählt ein Projekt.
+	 * 
+	 * @param projectid
+	 *            Projekt-ID.
+	 * @throws IOException
+	 */
+	public void selectProject(String projectid) throws IOException
+	{
+
+		super.clearParameters();
+		super.setParameter("action", "index");
+		super.setParameter("subaction", "project");
+		super.setParameter("id", projectid);
+
+		readJSON();
 	}
 }

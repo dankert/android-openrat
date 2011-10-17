@@ -20,14 +20,14 @@ package de.openrat.android.blog;
 
 import java.io.IOException;
 
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import de.openrat.client.CMSRequest;
 import de.openrat.client.OpenRatClient;
 
 /**
@@ -72,31 +71,63 @@ public class OpenRatBlog extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				try
+				AsyncTask<Void, Void, Void> loginTask = new AsyncTask<Void, Void, Void>()
 				{
-					final ProgressDialog dialog = ProgressDialog.show(
-							OpenRatBlog.this, getResources().getString(
-									R.string.loading), getResources()
-									.getString(R.string.waitingforlogin));
+					ProgressDialog dialog = new ProgressDialog(OpenRatBlog.this);
 
-					client.login(prefs.getString("username", ""), prefs
-							.getString("password", ""));
+					@Override
+					protected void onPreExecute()
+					{
+						dialog.setTitle(R.string.loading);
+						dialog.setMessage(getResources().getString(
+								R.string.waitingforlogin));
+						dialog.show();
+					}
 
-					dialog.dismiss();
+					@Override
+					protected void onPostExecute(Void result)
+					{
+						dialog.dismiss();
+					}
 
-					// Verbindung und Login waren erfolgreich.
-					// Jetzt zur Projekt-Liste wechseln.
-					final Intent intent = new Intent(v.getContext(),
-							ProjectActivity.class);
-					intent.putExtra(ProjectActivity.CLIENT, client);
-					startActivity(intent);
-				}
-				catch (IOException e1)
-				{
-					// Verbindung nicht möglich...
-					Toast.makeText(OpenRatBlog.this, e1.getMessage(),
-							Toast.LENGTH_LONG);
-				}
+					@Override
+					protected Void doInBackground(Void... params)
+					{
+						try
+						{
+							client.login(prefs.getString("username", ""), prefs
+									.getString("password", ""));
+
+
+							// Verbindung und Login waren erfolgreich.
+							// Jetzt zur Projekt-Liste wechseln.
+							final Intent intent = new Intent(OpenRatBlog.this,
+									ProjectActivity.class);
+							intent.putExtra(ProjectActivity.CLIENT, client);
+							startActivity(intent);
+						}
+						catch (final IOException e1)
+						{
+							dialog.dismiss();
+							// Verbindung nicht möglich...
+							Log.i(this.getClass().getName(), e1.getMessage(),
+									e1);
+							runOnUiThread(new Runnable()
+							{
+
+								@Override
+								public void run()
+								{
+									Toast.makeText(OpenRatBlog.this, e1
+											.getMessage(), Toast.LENGTH_LONG);
+								}
+							});
+						}
+						
+						return null;
+					}
+				};
+				loginTask.execute();
 
 			}
 		});

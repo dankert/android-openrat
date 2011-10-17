@@ -52,25 +52,34 @@ public class UploadIntentService extends IntentService
 		final PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 
+		final File file = new File(filePath);
+		final String msgUpload = getResources().getString(R.string.upload);
 		final Notification notification = new Notification(R.drawable.logo,
-				getResources().getString(R.string.upload), System
-						.currentTimeMillis());
-		notification.setLatestEventInfo(getApplicationContext(), getResources()
-				.getString(R.string.upload_ok), filePath, contentIntent);
-		notification.flags |= Notification.FLAG_NO_CLEAR;
+				msgUpload, System.currentTimeMillis());
+		notification.setLatestEventInfo(getApplicationContext(), msgUpload,
+				file.getName(), contentIntent);
+		notification.flags = Notification.FLAG_ONGOING_EVENT
+				| Notification.FLAG_NO_CLEAR;
 		nm.notify(NOTIFICATION_UPLOAD, notification);
-		
+
 		try
 		{
-			final File file = new File(filePath);
+			try
+			{
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e)
+			{
+			}
 
-			client.uploadFile(EXTRA_FILENAME,file);
+			int old = client.setTimeout(3600000); // 1 Std.
+			client.uploadFile(EXTRA_FILENAME, file);
+			client.setTimeout(old);
 
 			// Alles OK.
 			final String msgText = getResources().getString(R.string.upload_ok);
-			notification.setLatestEventInfo(getApplicationContext(),
-					msgText, file
-							.getName(), contentIntent);
+			notification.setLatestEventInfo(getApplicationContext(), msgText,
+					file.getName(), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			nm.notify(NOTIFICATION_UPLOAD, notification);
 			Log.d(this.getClass().getName(), msgText);
@@ -78,10 +87,11 @@ public class UploadIntentService extends IntentService
 		catch (IOException e)
 		{
 			// Fehler ist aufgetreten.
-			final String msgText = getResources().getString(R.string.upload_fail);
-			notification.setLatestEventInfo(getApplicationContext(),
-					msgText, e.getMessage(),
-					contentIntent);
+			final String msgText = getResources().getString(
+					R.string.upload_fail);
+			notification.setLatestEventInfo(getApplicationContext(), msgText, e
+					.getMessage()
+					+ ": " + file.getName(), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			nm.notify(NOTIFICATION_UPLOAD, notification);
 

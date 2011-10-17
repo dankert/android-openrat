@@ -7,22 +7,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
-import de.openrat.client.CMSRequest;
+import de.openrat.client.OpenRatClient;
 
 /**
  * @author dankert
@@ -34,7 +32,7 @@ public class ProjectActivity extends ListActivity
 	public static final String CLIENT = "client";
 	private static final String NAME = "name";
 	private static final String DESCRIPTION = "description";
-	private CMSRequest request;
+	private OpenRatClient client;
 	private List<FolderEntry> data;
 
 	@Override
@@ -48,50 +46,60 @@ public class ProjectActivity extends ListActivity
 		;
 		String[] from = new String[] { NAME, DESCRIPTION };
 		;
-		data = new ArrayList<FolderEntry>();
 
-		request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
+		client = (OpenRatClient) getIntent().getSerializableExtra(CLIENT);
 
-		request.clearParameters();
-		request.setParameter("action", "index");
-		request.setParameter("subaction", "projectmenu");
-		String response = null;
-		try
+		AsyncTask<String, Void, List<FolderEntry>> loadProjectsTask = new AsyncTask<String, Void, List<FolderEntry>>()
 		{
-			ProgressDialog dialog = ProgressDialog.show(ProjectActivity.this,
-					getResources().getString(R.string.loading), getResources()
-							.getString(R.string.waitingforprojects));
-			response = request.performRequest();
-			dialog.dismiss();
 
-		} catch (IOException e)
-		{
-			response = e.getMessage();
-		}
+			ProgressDialog dialog = new ProgressDialog(ProjectActivity.this);
 
-		try
-		{
-			System.out.println(response);
-			JSONObject json = new JSONObject(response);
-			JSONArray projects = json.getJSONArray("projects");
-			for (int i = 0; i < projects.length(); i++)
+			@Override
+			protected void onPreExecute()
 			{
-				JSONObject project = projects.getJSONObject(i);
-
-				final FolderEntry entry = new FolderEntry();
-				entry.type = FType.PROJECT;
-				entry.name = project.getString("name");
-				entry.description = "";
-				entry.id = project.getString("id");
-
-				data.add(entry);
-
+				dialog.setTitle(getResources().getString(R.string.loading));
+				dialog.setMessage(getResources().getString(
+						R.string.waitingforprojects));
+				dialog.show();
 			}
 
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+			protected void onPostExecute(List<FolderEntry> result)
+			{
+				dialog.dismiss();
+
+				final ListAdapter adapter = new FolderContentAdapter(
+						ProjectActivity.this, data);
+				setListAdapter(adapter);
+			};
+
+			@Override
+			protected List<FolderEntry> doInBackground(String... params)
+			{
+				//
+				try
+				{
+					data = client.loadProjects();
+				}
+				catch (final IOException e)
+				{
+					Log.e(this.getClass().getName(), e.getMessage(), e);
+					runOnUiThread(new Runnable()
+					{
+
+						@Override
+						public void run()
+						{
+							Toast.makeText(ProjectActivity.this,
+									e.getMessage(), Toast.LENGTH_SHORT);
+						}
+					});
+					data = new ArrayList<FolderEntry>();
+				}
+
+				return data;
+			}
+		};
+		loadProjectsTask.execute();
 
 		ListView list = getListView();
 
@@ -102,43 +110,65 @@ public class ProjectActivity extends ListActivity
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
 			{
-				final Intent i = new Intent(ProjectActivity.this,
-						FolderActivity.class);
-				i.putExtra(CLIENT, request);
-
 				// Projekt auswählen
-				String projectid = data.get(position).id;
+				final String projectid = data.get(position).id;
 
-				request = (CMSRequest) getIntent().getSerializableExtra(CLIENT);
-
-				request.clearParameters();
-				request.setParameter("action", "index");
-				request.setParameter("subaction", "project");
-				request.setParameter("id", projectid);
-				String response = null;
-				try
+				AsyncTask<String, Void, Void> startProjectTask = /**
+				 * Starten des
+				 * ausgewählten Projektes.
+				 * 
+				 * @author dankert
+				 * 
+				 */
+				new AsyncTask<String, Void, Void>()
 				{
-					ProgressDialog dialog = ProgressDialog.show(
-							ProjectActivity.this, getResources().getString(
-									R.string.loading), getResources()
-									.getString(R.string.waitingforlogin));
-					response = request.performRequest();
-					dialog.dismiss();
 
-				} catch (IOException e)
-				{
-					Toast.makeText(ProjectActivity.this, e.getMessage(),
-							Toast.LENGTH_LONG);
-					System.err
-							.println("Fehler bei Projektauswahl: " + response);
-					System.err.println(e.getMessage());
-				}
+					ProgressDialog dialog = new ProgressDialog(
+							ProjectActivity.this);
 
-				startActivity(i);
+					@Override
+					protected void onPreExecute()
+					{
+						dialog.setTitle(R.string.loading);
+						dialog.setMessage(getResources().getString(
+								R.string.waitingforselectproject));
+						dialog.show();
+					}
+
+					protected void onPostExecute(Void result)
+					{
+						dialog.dismiss();
+					};
+
+					@Override
+					protected Void doInBackground(String... params)
+					{
+						//
+						try
+						{
+							client.selectProject(projectid);
+						}
+						catch (IOException e)
+						{
+							Log.e(this.getClass().getName(), e.getMessage(), e);
+							Toast.makeText(ProjectActivity.this,
+									e.getMessage(), Toast.LENGTH_SHORT);
+						}
+
+						final Intent i = new Intent(ProjectActivity.this,
+								FolderActivity.class);
+						i.putExtra(CLIENT, client);
+
+						startActivity(i);
+
+						return null;
+					}
+				};
+
+				startProjectTask.execute();
+
 			}
 		});
 
-		final ListAdapter adapter = new FolderContentAdapter(this, data);
-		setListAdapter(adapter);
 	}
 }

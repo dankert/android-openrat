@@ -43,7 +43,7 @@ public class PublishIntentService extends IntentService
 	@Override
 	protected void onHandleIntent(Intent intent)
 	{
-		final OpenRatClient request = (OpenRatClient) intent
+		final OpenRatClient client = (OpenRatClient) intent
 				.getSerializableExtra(EXTRA_REQUEST);
 
 		String type = intent.getStringExtra(EXTRA_TYPE);
@@ -52,9 +52,9 @@ public class PublishIntentService extends IntentService
 		
 		// Erstmal alles aktivieren was geht
 		// TODO: Abfrage der gewünschten Einstellungen über AlertDialog.
-		request.setParameter("subdirs", "1");
-		request.setParameter("pages", "1");
-		request.setParameter("files", "1");
+		client.setParameter("subdirs", "1");
+		client.setParameter("pages", "1");
+		client.setParameter("files", "1");
 
 		final NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -75,7 +75,17 @@ public class PublishIntentService extends IntentService
 
 		try
 		{
-			request.publish(type, id);
+			try
+			{
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e)
+			{
+			}
+			
+			int old = client.setTimeout(3600000); // 1 Std.
+			client.publish(type, id);
+			client.setTimeout(old);
 
 			// Alles OK.
 			notification.setLatestEventInfo(getApplicationContext(),

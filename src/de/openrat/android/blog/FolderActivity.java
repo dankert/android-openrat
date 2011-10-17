@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -110,6 +111,7 @@ public class FolderActivity extends ListActivity
 				}
 				catch (IOException e)
 				{
+					Log.e(this.getClass().getName(),e.getMessage(),e);
 					Toast.makeText(FolderActivity.this,e.getMessage(),Toast.LENGTH_SHORT);
 				}
 				

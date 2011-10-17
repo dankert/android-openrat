@@ -27,6 +27,7 @@
 	<string name="loading">Warten auf Server</string>
 	<string name="waitingforcontent">Inhalt wird geladen</string>
 	<string name="waitingforprojects">Projekte werden geladen</string>
+	<string name="waitingforselectproject">Wähle Projekt</string>
 	<string name="waitingforrootfolder">Einstiegsordner wird gesucht</string>
 	<string name="waitingforlogin">Anmeldung am Server</string>
 	<string name="language">Sprache</string>

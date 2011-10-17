@@ -109,6 +109,7 @@ public class HTTPRequest implements Serializable
 	private String cookieName;
 	private String cookieValue;
 	private String language;
+	private int timeout = 30000;
 
 	/**
      * 
@@ -177,6 +178,20 @@ public class HTTPRequest implements Serializable
 
 		this.proxyHostname = host;
 		this.proxyPort = port;
+	}
+
+	
+	/**
+	 * Timeout for Socket.
+	 * @param timeout Timeout in milliseconds.
+	 * @return old timeout 
+	 */
+	public int setTimeout(int timeout)
+	{
+		int oldTimeout = this.timeout;
+		this.timeout = timeout;
+		
+		return oldTimeout;
 	}
 
 	/**
@@ -355,8 +370,8 @@ public class HTTPRequest implements Serializable
 
 			socket.setKeepAlive(false);
 			socket.setReuseAddress(false);
-			socket.setSoTimeout(5000);
-			socket.connect(socketAddress, 5000);
+			socket.setSoTimeout(timeout);
+			socket.connect(socketAddress, timeout);
 
 			final StringBuffer header = new StringBuffer();
 
