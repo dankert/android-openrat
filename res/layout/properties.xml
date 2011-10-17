@@ -18,6 +18,12 @@
 			<EditText android:id="@+id/filename" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" />
 		</TableRow>
+		<TableRow>
+			<TextView android:text="@string/filename"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" />
+			<EditText android:id="@+id/description" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 	</TableLayout>
 
 	<Button android:id="@+id/button_save" android:text="@string/save"

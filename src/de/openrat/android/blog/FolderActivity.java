@@ -213,7 +213,7 @@ public class FolderActivity extends ListActivity
 						PropertiesActivity.class);
 				intent.putExtra(CLIENT, client);
 				intent.putExtra("objectid", entry.id);
-				intent.putExtra(TYP, entry.type);
+				intent.putExtra(TYP, entry.type.name().toLowerCase());
 				startActivity(intent);
 				return true;
 

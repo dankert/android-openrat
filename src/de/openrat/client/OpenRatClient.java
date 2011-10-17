@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-
 import de.openrat.android.blog.FolderEntry;
 import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.util.FileUtils;
@@ -138,8 +139,7 @@ public class OpenRatClient extends CMSRequest
 		}
 		catch (SocketTimeoutException e)
 		{
-			throw new OpenRatClientException(
-					"Timeout exceeded", e);
+			throw new OpenRatClientException("Timeout exceeded", e);
 		}
 		catch (IOException e)
 		{
@@ -178,7 +178,8 @@ public class OpenRatClient extends CMSRequest
 			{
 				// throw new OpenRatClientException(
 				// "Server error: Response does not include a attribute 'notice_status'.\n"+response);
-				return json; // Alles OK, kann passieren, wenn es keine Notices gibt.
+				return json; // Alles OK, kann passieren, wenn es keine Notices
+				// gibt.
 			}
 
 		}
@@ -379,6 +380,53 @@ public class OpenRatClient extends CMSRequest
 		super.setParameter("action", "index");
 		super.setParameter("subaction", "project");
 		super.setParameter("id", projectid);
+
+		readJSON();
+	}
+
+	public Map<String, String> getProperties(String type, String id)
+			throws IOException
+	{
+		super.clearParameters();
+		super.setAction(type);
+		super.setActionMethod("prop");
+		super.setId(id);
+
+		JSONObject json = readJSON();
+
+		final Map<String, String> properties = new HashMap<String, String>();
+
+		try
+		{
+			properties.put("name", json.getString("name"));
+			properties.put("filename", json.getString("filename"));
+			properties.put("description", json.getString("description"));
+		}
+		catch (JSONException e)
+		{
+			throw new OpenRatClientException("a property was not found", e);
+		}
+
+		return properties;
+
+	}
+
+	public void setProperties(String type, String id,
+			Map<String, String> properties) throws IOException
+	{
+		super.clearParameters();
+		super.setAction(type);
+		if	( type.equals("page") )
+			super.setActionMethod("prop");
+		else
+			super.setActionMethod("saveprop");
+		super.setMethod("POST");
+		super.setId(id);
+
+		for (String name : properties.keySet())
+		{
+			super.setParameter(name, properties.get(name));
+		}
 
 		readJSON();
 	}

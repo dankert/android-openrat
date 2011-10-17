@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.openrat.android.blog.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 
 /**
@@ -71,7 +72,7 @@ public class OpenRatBlog extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				AsyncTask<Void, Void, Void> loginTask = new AsyncTask<Void, Void, Void>()
+				AsyncTask<Void, Void, Void> oldloginTask = new AsyncTask<Void, Void, Void>()
 				{
 					ProgressDialog dialog = new ProgressDialog(OpenRatBlog.this);
 
@@ -98,7 +99,6 @@ public class OpenRatBlog extends Activity
 							client.login(prefs.getString("username", ""), prefs
 									.getString("password", ""));
 
-
 							// Verbindung und Login waren erfolgreich.
 							// Jetzt zur Projekt-Liste wechseln.
 							final Intent intent = new Intent(OpenRatBlog.this,
@@ -123,11 +123,45 @@ public class OpenRatBlog extends Activity
 								}
 							});
 						}
-						
+
 						return null;
 					}
 				};
-				loginTask.execute();
+				// oldloginTask.execute();
+
+				new OpenRatClientAsyncTask(OpenRatBlog.this, R.string.loading,
+						R.string.waitingforlogin)
+				{
+					@Override
+					protected void callServer() throws IOException
+					{
+						client.login(prefs.getString("username", ""), prefs
+								.getString("password", ""));
+
+						// Verbindung und Login waren erfolgreich.
+						// Jetzt zur Projekt-Liste wechseln.
+						final Intent intent = new Intent(OpenRatBlog.this,
+								ProjectActivity.class);
+						intent.putExtra(ProjectActivity.CLIENT, client);
+						startActivity(intent);
+					}
+
+					protected void doOnError(final IOException e)
+					{
+
+						runOnUiThread(new Runnable()
+						{
+
+							@Override
+							public void run()
+							{
+								Toast.makeText(OpenRatBlog.this,
+										e.getMessage(), Toast.LENGTH_LONG);
+							}
+						});
+					};
+
+				}.execute();
 
 			}
 		});

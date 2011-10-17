@@ -2,9 +2,11 @@ package de.openrat.android.blog;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import de.openrat.client.CMSRequest;
 import de.openrat.client.OpenRatClient;
 
 public class NewActivity extends Activity
@@ -28,10 +30,28 @@ public class NewActivity extends Activity
 		setContentView(R.layout.new1);
 
 		final RadioGroup radioGroupTemplates = (RadioGroup) findViewById(R.id.RadioGroupTemplates);
-		radioGroupTemplates.setEnabled(menuid == R.id.menu_newpage);
+		if (menuid == R.id.menu_newpage)
+		{
+			radioGroupTemplates.setVisibility(View.VISIBLE);
 
-		RadioButton radioButton = new RadioButton(this);
-		radioButton.setText("test");
-		radioGroupTemplates.addView(radioButton);
+			RadioButton radioButton = new RadioButton(this);
+			radioButton.setText("test");
+			radioGroupTemplates.addView(radioButton);
+
+		}
+		else
+		{
+			radioGroupTemplates.setVisibility(View.INVISIBLE);
+		}
+
+		final Button button = (Button) findViewById(R.id.button_save);
+		button.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				
+			}
+		});
 	}
 }
