@@ -1,8 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/menu_language" android:title="@string/language"
 		android:icon="@android:drawable/ic_menu_mapmode"></item>
+		<!-- Varianten sind hier nicht sinnvoll. 
 	<item android:id="@+id/menu_model" android:title="@string/model"
 		android:icon="@android:drawable/ic_menu_set_as"></item>
+		 -->
 	<item android:id="@+id/menu_new" android:title="@string/new1"
 		android:icon="@android:drawable/ic_menu_add">
 		<menu>
