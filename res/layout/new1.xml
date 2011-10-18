@@ -9,15 +9,16 @@
 		<TableRow>
 			<TextView android:text="@string/name" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:textSize="14sp"></TextView>
-			<EditText android:text="@+id/EditText01" android:id="@+id/EditText01"
+			<EditText android:id="@+id/newname"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></EditText>
-		</TableRow>
+		</TableRow> 
 		<TableRow android:id="@+id/template">
 			<TextView android:text="@string/template"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-			<RadioGroup android:id="@+id/RadioGroupTemplates"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:orientation="vertical"></RadioGroup>
+			<Spinner android:id="@+id/spinner" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:drawSelectorOnTop="true"
+				android:prompt="@string/template" />
+
 		</TableRow>
 	</TableLayout>
 

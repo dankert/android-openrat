@@ -72,7 +72,7 @@ public class OpenRatBlog extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				new OpenRatClientAsyncTask(OpenRatBlog.this, R.string.loading,
+				new OpenRatClientAsyncTask(OpenRatBlog.this,
 						R.string.waitingforlogin)
 				{
 					@Override

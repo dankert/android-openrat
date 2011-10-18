@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,30 +71,38 @@ public class OpenRatClient extends CMSRequest
 	 *            Rootfolder geladen.
 	 * @return Ordner-Einträge
 	 */
+	public String getRootFolder() throws IOException
+	{
+		clearParameters();
+		setAction("tree");
+		setActionMethod("load");
+
+		JSONObject json = readJSON();
+
+		try
+		{
+			String folderid = json.getJSONArray("zeilen").getJSONObject(1)
+					.getString("name");
+			return folderid;
+		}
+		catch (JSONException e)
+		{
+			throw new OpenRatClientException(
+					"JSON-Error while resolving root folder", e);
+		}
+	}
+
+	/**
+	 * Ermittelt den Inhalt eines Ordners.
+	 * 
+	 * @param folderid
+	 *            Id des zu ladenen Ordners. Falls <code>null</code>, wird der
+	 *            Rootfolder geladen.
+	 * @return Ordner-Einträge
+	 */
 	public List<FolderEntry> getFolderEntries(String folderid)
 			throws IOException
 	{
-		if (folderid == null)
-		{
-
-			clearParameters();
-			setAction("tree");
-			setActionMethod("load");
-
-			JSONObject json = readJSON();
-
-			try
-			{
-				folderid = json.getJSONArray("zeilen").getJSONObject(1)
-						.getString("name");
-			}
-			catch (JSONException e)
-			{
-				throw new OpenRatClientException(
-						"JSON-Error while resolving root folder", e);
-			}
-		}
-
 		final List<FolderEntry> data = new ArrayList<FolderEntry>();
 
 		super.clearParameters();
@@ -104,6 +114,9 @@ public class OpenRatClient extends CMSRequest
 		try
 		{
 			JSONObject json = readJSON();
+			if (!(json.get("object") instanceof JSONObject))
+				return data; // Ordner ist leer.
+
 			JSONObject inhalte = json.getJSONObject("object");
 			JSONArray names = inhalte.names();
 
@@ -416,7 +429,7 @@ public class OpenRatClient extends CMSRequest
 	{
 		super.clearParameters();
 		super.setAction(type);
-		if	( type.equals("page") )
+		if (type.equals("page"))
 			super.setActionMethod("prop");
 		else
 			super.setActionMethod("saveprop");
@@ -427,6 +440,64 @@ public class OpenRatClient extends CMSRequest
 		{
 			super.setParameter(name, properties.get(name));
 		}
+
+		readJSON();
+	}
+
+	public Map<String, String> getTemplates() throws IOException
+	{
+		super.clearParameters();
+		super.setAction("template");
+		super.setActionMethod("listing");
+		super.setMethod("POST");
+
+		JSONObject json = readJSON();
+
+		final Map<String, String> templateMap = new LinkedHashMap<String, String>();
+
+		try
+		{
+			JSONObject templates = json.getJSONObject("templates");
+
+			for (Iterator ti = templates.keys(); ti.hasNext();)
+			{
+				String templateId = (String) ti.next();
+				String templateName = templates.getJSONObject(templateId)
+						.getString("name");
+				templateMap.put(templateId, templateName);
+			}
+		}
+		catch (JSONException e)
+		{
+			Log.w(this.getClass().getSimpleName(), "\n\n" + json);
+			throw new OpenRatClientException("a property was not found", e);
+		}
+
+		return templateMap;
+	}
+
+	public void createFolder(String folderid, String string) throws IOException
+	{
+		super.clearParameters();
+		super.setId(folderid);
+		super.setAction("folder");
+		super.setActionMethod("createnewfolder");
+		super.setMethod("POST");
+		super.setParameter("name", string);
+
+		readJSON();
+	}
+
+	public void createPage(String folderid, String string, String templateid)
+			throws IOException
+	{
+		super.clearParameters();
+		super.setId(folderid);
+		super.setAction("folder");
+		super.setActionMethod("createnewpage");
+		super.setMethod("POST");
+		super.setParameter("name", string);
+		super.setParameter("templateid", templateid);
 
 		readJSON();
 	}

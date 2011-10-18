@@ -5,6 +5,8 @@ package de.openrat.android.blog.util;
 
 import java.io.IOException;
 
+import de.openrat.android.blog.R;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
@@ -24,12 +26,12 @@ public abstract class OpenRatClientAsyncTask extends
 	private AlertDialog alertDialog;
 	private IOException error;
 
-	public OpenRatClientAsyncTask(Context context, int title, int message)
+	public OpenRatClientAsyncTask(Context context, int message)
 	{
 		this.context = context;
 
 		this.progressDialog = new ProgressDialog(context);
-		progressDialog.setTitle(title);
+		progressDialog.setTitle(R.string.loading);
 		progressDialog.setMessage(context.getResources().getString(message));
 	}
 

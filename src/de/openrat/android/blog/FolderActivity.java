@@ -104,9 +104,11 @@ public class FolderActivity extends ListActivity
 			{
 				//
 				folderid = getIntent().getStringExtra("folderid");
-
 				try
 				{
+					if	( folderid == null )
+						folderid = client.getRootFolder();
+					
 					data = client.getFolderEntries(folderid);
 				}
 				catch (IOException e)
@@ -383,9 +385,9 @@ public class FolderActivity extends ListActivity
 			case R.id.menu_newpage:
 
 				intent = new Intent(this, NewActivity.class);
-				intent.putExtra("request", getIntent().getSerializableExtra(
-						"request"));
-				intent.putExtra("menuid", item.getItemId());
+				intent.putExtra(NewActivity.EXTRA_CLIENT, client);
+				intent.putExtra(NewActivity.EXTRA_MENUID, item.getItemId());
+				intent.putExtra(NewActivity.EXTRA_FOLDERID, folderid);
 				startActivity(intent);
 				return true;
 
