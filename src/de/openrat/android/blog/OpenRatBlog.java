@@ -72,63 +72,6 @@ public class OpenRatBlog extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				AsyncTask<Void, Void, Void> oldloginTask = new AsyncTask<Void, Void, Void>()
-				{
-					ProgressDialog dialog = new ProgressDialog(OpenRatBlog.this);
-
-					@Override
-					protected void onPreExecute()
-					{
-						dialog.setTitle(R.string.loading);
-						dialog.setMessage(getResources().getString(
-								R.string.waitingforlogin));
-						dialog.show();
-					}
-
-					@Override
-					protected void onPostExecute(Void result)
-					{
-						dialog.dismiss();
-					}
-
-					@Override
-					protected Void doInBackground(Void... params)
-					{
-						try
-						{
-							client.login(prefs.getString("username", ""), prefs
-									.getString("password", ""));
-
-							// Verbindung und Login waren erfolgreich.
-							// Jetzt zur Projekt-Liste wechseln.
-							final Intent intent = new Intent(OpenRatBlog.this,
-									ProjectActivity.class);
-							intent.putExtra(ProjectActivity.CLIENT, client);
-							startActivity(intent);
-						}
-						catch (final IOException e1)
-						{
-							dialog.dismiss();
-							// Verbindung nicht möglich...
-							Log.i(this.getClass().getName(), e1.getMessage(),
-									e1);
-							runOnUiThread(new Runnable()
-							{
-
-								@Override
-								public void run()
-								{
-									Toast.makeText(OpenRatBlog.this, e1
-											.getMessage(), Toast.LENGTH_LONG);
-								}
-							});
-						}
-
-						return null;
-					}
-				};
-				// oldloginTask.execute();
-
 				new OpenRatClientAsyncTask(OpenRatBlog.this, R.string.loading,
 						R.string.waitingforlogin)
 				{
@@ -138,27 +81,16 @@ public class OpenRatBlog extends Activity
 						client.login(prefs.getString("username", ""), prefs
 								.getString("password", ""));
 
+					}
+
+					protected void doOnSuccess()
+					{
 						// Verbindung und Login waren erfolgreich.
 						// Jetzt zur Projekt-Liste wechseln.
 						final Intent intent = new Intent(OpenRatBlog.this,
 								ProjectActivity.class);
 						intent.putExtra(ProjectActivity.CLIENT, client);
 						startActivity(intent);
-					}
-
-					protected void doOnError(final IOException e)
-					{
-
-						runOnUiThread(new Runnable()
-						{
-
-							@Override
-							public void run()
-							{
-								Toast.makeText(OpenRatBlog.this,
-										e.getMessage(), Toast.LENGTH_LONG);
-							}
-						});
 					};
 
 				}.execute();

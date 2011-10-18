@@ -4,13 +4,13 @@
 package de.openrat.android.blog.util;
 
 import java.io.IOException;
-import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import de.openrat.android.blog.FolderEntry;
 
 /**
  * @author dankert
@@ -19,45 +19,86 @@ import de.openrat.android.blog.FolderEntry;
 public abstract class OpenRatClientAsyncTask extends
 		AsyncTask<Void, Void, Void>
 {
-	private ProgressDialog dialog;
+	private ProgressDialog progressDialog;
 	private Context context;
+	private AlertDialog alertDialog;
+	private IOException error;
 
-	public OpenRatClientAsyncTask(Context context, ProgressDialog dialog)
-	{
-		this.dialog = dialog;
-		this.context = context;
-	}
-
-	public OpenRatClientAsyncTask(Context context, int title, CharSequence message)
-	{
-		this.dialog = new ProgressDialog(context);
-		dialog.setTitle(title);
-		dialog.setMessage(message);
-		this.context = context;
-	}
-	
 	public OpenRatClientAsyncTask(Context context, int title, int message)
 	{
-		this.dialog = new ProgressDialog(context);
-		dialog.setTitle(title);
-		dialog.setMessage(context.getResources().getString(message));
 		this.context = context;
+
+		this.progressDialog = new ProgressDialog(context);
+		progressDialog.setTitle(title);
+		progressDialog.setMessage(context.getResources().getString(message));
 	}
 
 	@Override
-	protected void onPreExecute()
+	final protected void onPreExecute()
 	{
 		// dialog.setTitle(getResources().getString(R.string.loading));
 		// dialog.setMessage(getResources().getString(
 		// R.string.waitingforcontent));
-		dialog.show();
+		progressDialog.show();
 	}
 
-	protected void onPostExecute(List<FolderEntry> result)
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+	 */
+	@Override
+	final protected void onPostExecute(Void result)
 	{
-		dialog.dismiss();
+		progressDialog.dismiss();
 
-	};
+		if (error != null)
+		{
+			doOnError(error);
+		}
+		else
+		{
+			doOnSuccess();
+		}
+	}
+
+	/**
+	 * Wird aufgerufen, falls die Serveranfrage nicht durchgeführt werden
+	 * konnte. Läuft im UI-Thread.
+	 * 
+	 * @param error
+	 *            Exception, die aufgetreten ist.
+	 */
+	protected void doOnError(IOException error)
+	{
+		final Builder builder = new AlertDialog.Builder(this.context);
+		alertDialog = builder.setCancelable(true).create();
+		final int causeRId = ExceptionUtils.getResourceStringId(error);
+		String msg = // this.context.getResources().getString(R.string.reason)
+		// + ":\n\n" +
+		error.getMessage();
+
+		Throwable t = error;
+		while (t.getCause() != null)
+		{
+			t = t.getCause();
+			msg += ": " + t.getMessage();
+		}
+
+		alertDialog.setTitle(causeRId);
+		alertDialog.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		alertDialog.setMessage(msg);
+		alertDialog.show();
+
+	}
+
+	/**
+	 * Wird aufgerufen, falls die Serveranfrage erfolgreich durchgeführt werden
+	 * konnte. Läuft im UI-Thread.
+	 */
+	protected void doOnSuccess()
+	{
+	}
 
 	@Override
 	protected Void doInBackground(Void... params)
@@ -68,30 +109,11 @@ public abstract class OpenRatClientAsyncTask extends
 		}
 		catch (IOException e)
 		{
-			dialog.dismiss();
 			Log.e(this.getClass().getName(), e.getMessage(), e);
-
-			doOnError(e);
-
+			error = e;
 		}
 
 		return null;
-	}
-
-	/**
-	 * @param e
-	 */
-	protected void doOnError(IOException e) {
-		dialog.setMessage( e.getMessage() );
-		dialog.show();
-		try
-		{
-			Thread.sleep(2000);
-		}
-		catch (InterruptedException e1)
-		{
-		}
-		dialog.dismiss();
 	}
 
 	/**

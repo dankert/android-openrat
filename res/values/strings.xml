@@ -52,4 +52,8 @@
 	<string name="folder_properties">Eigenschaften</string>
 	<string name="page_content">Seite</string>
 	<string name="editor">Inhalt</string>
+	<string name="error_timeout">Zeitablauf</string>
+	<string name="error_io">Verbindungsabbruch</string>
+	<string name="error">Fehler</string>
+	<string name="reason">Grund</string>
 </resources>
