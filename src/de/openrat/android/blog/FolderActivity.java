@@ -360,10 +360,6 @@ public class FolderActivity extends ListActivity
 				alert.show();
 				return true;
 
-			case R.id.menu_model:
-
-				Toast.makeText(this, "Model", Toast.LENGTH_SHORT);
-				return true;
 			case R.id.menu_upload:
 
 				Intent chooseFile;
