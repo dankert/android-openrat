@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="de">
+  <head>
+    <title>OpenRat - Openrat</title>
+    <meta name="author" content="Jan Dankert">
+<!-- Framework CSS -->
+<link rel="stylesheet" href="./files/5864/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="./files/5864/print.css" type="text/css" media="print">
+
+<!--[if lt IE 8]><link rel="stylesheet" href="./files/5864/ie.css" type="text/css" media="screen, projection"><![endif]-->
+
+<style type="text/css" media="screen">
+<!--
+li.menu2 a{color:#022A50; font-weight:normal; text-decoration:underline }
+td {font-family:Arial;font-size:13px; vertical-align:top; }
+td.oben { border-bottom:25px solid #7B9CBD; }
+td.submenu { border-right:1px solid #7B9CBD; }
+td.menu { vertical-align:bottom; text-align:right; }
+
+-->
+</style> 
+  </head>
+  <body>
+    <table width="100%" cellpadding="10" cellspacing="0">
+      <tr>
+        <td class="oben" id="header">
+          <table width="100%">
+            <tr>
+              <td><a href="./index.de.html"><img src="./images/logos/openrat.png" border="0" alt="OpenRat Logo" width="305" height="70"></a></td>
+              <td class="menu"><a href="./index.de.html">Start</a>  &middot; <a href="./doc/index.de.html" title="">Dokumentation</a> &middot; <a href="./download/index.de.html" title="">Download</a> &middot; <a href="./contact/index.de.html" title="">Kontakt</a></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table width="100%" cellpadding="10">
+            <tr>
+              <td class="submenu" width="200" id="navigation"><ul class="x0">
+<li class="x0"><strong class="x0">Openrat</strong></li><li class="x0"><a class="x0" href="./overview/features.de.html">&Uuml;berblick</a>
+</li>
+<li class="x0"><a class="x0" href="./doc/about.de.html">Dokumentation</a>
+</li>
+<li class="x0"><a class="x0" href="./screenshots/4j1.de.html">Screenshots</a>
+</li>
+<li class="x0"><a class="x0" href="./download/index.de.html">Download</a>
+</li>
+<li class="x0"><a class="x0" href="./dev/mithilfe.de.html">Entwicklung</a>
+</li>
+<li class="x0"><a class="x0" href="./contact/index.de.html">Kontakt</a>
+</li>
+<li class="x0"><a class="x0" href="http://demo.openrat.de/">Demo</a></li></ul></td>
+              <td colspan="2" id="content"><img align="right" src="./images/blank.gif" alt="logo" id="stock" width="16" height="16" title="blank"><strong> &raquo; </strong><span class="breadcrumb">Openrat</span><br/><br/><p>OpenRat ist ein freies <a href="http://de.wikipedia.org/wiki/CMS">Content-Management-System</a>, welches Ihre Webseiten vorkompiliert und in statischer Form auf dem Webserver ablegt. Durch dieses Prinzip werden Sicherheit und Performance maximiert.</p><p>Erfahren Sie <a href="./overview/features.de.html" title="">mehr &uuml;ber Openrat</a> oder gehen Sie gleich zum <a href="./download/index.de.html" title="">Download</a>.</p><p>Download: <a href="http://dl.openrat.de/openrat-latest-snapshot.tar.gz">Die aktuelle Snapshot-Version</a>.</p><p><img alt="screen-intro" src="./images/ppp.png" border="0" title="" width="737" height="520"></p><h3>Screencast<a name="screencast"></a></h3><p><object width="500" height="320"><param name="movie" value="http://www.youtube.com/v/fhelh1hoBy8&hl=de&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/fhelh1hoBy8&hl=de&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="500" height="320"></embed></object></p><h3>Quellen<a name="quellen"></a></h3><ul><li>OpenRat ist Open Source. Die Quellen kann man per <a href="http://de.wikipedia.org/wiki/Mercurial">Mercurial</a> mit dem Befehl <tt>hg clone static-http://scm.openrat.de/latest</tt> auschecken.</li><li><a href="./overview/changelog.de.html" title="">Changelog</a>.</li></ul><h3>Aktuelle Version<a name="aktuelleversion"></a></h3><p>Unter <a href="http://dl.openrat.de">dl.openrat.de</a> ist stets die <a href="http://dl.openrat.de/openrat-latest-snapshot.tar.gz">aktuelle Version</a> verf&uuml;gbar.</p><p>Es ist auch ein Debian- und Ubuntu-Paket verf&uuml;gbar: Erg&auml;nzen Sie dazu Ihre <tt>/etc/apt/sources.list</tt> wie folgt:</p><pre>deb http://debian.openrat.de/latest ./</pre><p>Ein anschlie&szlig;endes <tt>apt-get install openrat</tt> installiert OpenRat.</p><h3>Demo<a name="demo"></a></h3><p>Eine vollst&auml;ndige Demo mit der letzten Snapshot-Version ist verf&uuml;gbar unter <a href="http://demo.openrat.de">demo.openrat.de</a>.</p><p>Die Inhalte im Demo-System werden t&auml;glich zur&uuml;ckgesetzt.</p><h3>Unterst&uuml;tzung f&uuml;r Open-Id<a name="untersttzungfropen-id"></a></h3><p>OpenRat unterst&uuml;tzt eine Autorisierung per <a href="http://www.openid.net">Open-Id</a>. OpenId ist per Default deaktiviert, kann aber &uuml;ber die Konfiguration in der <tt>security.ini.php</tt> aktiviert werden.</p><h3>Forum und Bugtracker<a name="forumundbugtracker"></a></h3><p>&Uuml;ber Bitbucket ist ein <a href="http://bitbucket.org/braunbaer/openrat/wiki/" title="">Wiki</a> sowie ein <a href="http://bitbucket.org/braunbaer/openrat/issues/?status=new&amp;status=open" title="">Bugtracker</a> verf&uuml;gbar.</p><h3>WebDAV<a name="webdav"></a></h3><p>OpenRat unterst&uuml;tzt <a href="http://de.wikipedia.org/wiki/WebDAV">WebDAV</a>. Damit kann mit einem WebDAV-Client (z.B. KDE Konqueror, MS Windows Explorer, MS Internet Explorer, MS-Office) direkt auf die Dateien im OpenRat-CMS zugegriffen werden.</p><p>Implementiert ist DAV-Level 1 (keine LOCKs) mit einem vollwertigen Schreibzugriff. Es ist nicht m&ouml;glich, auf Seiten und Verweise zuzugreifen, da die Komplexit&auml;t dieser Objekte &uuml;ber WebDAV noch nicht abzubilden ist.</p><p>WebDAV ist im Auslieferungszustand deaktiviert, kann aber &uuml;ber die Datei <tt>webdav.ini.php</tt> aktiviert werden.</p><h3>Wikipedia<a name="wikipedia"></a></h3><p>Noch eine Baustelle und keineswegs relevant: Der <a href="http://de.wikipedia.org/wiki/Benutzer:JanDankert/OpenRat_%28Entwurf%29">OpenRat-Artikel in der Wikipedia</a>. Vielleicht helfen Sie mit?</p><h3>HTML-Editor<a name="html-editor"></a></h3><p>OpenRat enth&auml;lt den <a href="http://www.ckeditor.com/">CK-Editor</a>.</p><p>Dieser ist aktiv, wenn ein Textabsatz-Element die Eigenschaft <cite>&bdquo;HTML&ldquo;</cite> (und nicht <cite>&bdquo;Wiki&ldquo;</cite>) besitzt. Beim Editieren eines Textabsatzes im <cite>&bdquo;Erweitert&ldquo;</cite>-Modus wird dann der Editor gestartet. Hierzu ist jedoch aktiviertes Javaskript sowie Internet Explorer ab Version 5.5, Mozilla Firefox/Iceweasel ab Version 2 oder Opera 9.5 erforderlich.</p><h3>Status der Entwicklung<a name="statusderentwicklung"></a></h3><p>Openrat ist offziell noch <cite>&bdquo;beta&ldquo;</cite> und nicht f&uuml;r produktive Systeme zu empfehlen.</p><br><br><hr size="1"><small>Letzte &Auml;nderung 22.06.2010, 23:25, ver&ouml;ffentlicht 07.09.2010, 22:51 | <a href="./index.de.m.html">mobil</a>, <a href="./index.de.html" lang="de">deutsch</a>, <a href="./index.en.html" lang="en">english</a> | <a href="./index.de.pdf" lang="de">PDF deutsch</a>,  <a href="./index.en.pdf" lang="en">PDF english</a></small></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

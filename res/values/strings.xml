@@ -69,4 +69,8 @@
 	<string name="areyousure">Sicher?</string>
 	<string name="choosefile">Datei auswählen</string>
 	<string name="chooseimage">Bild auswählen</string>
+	<string name="newserver">Neuer Server</string>
+	<string name="server">Server</string>
+	<string name="timeout">Zeitablauf</string>
+	<string name="timeout_desc">Timeout der TCP/IP-Verbindung in Sekunden</string>
 </resources>

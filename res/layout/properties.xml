@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	android:orientation="vertical">
 
-	<TableLayout android:layout_width="wrap_content"
+	<TableLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
 
 		<TableRow>
@@ -15,14 +15,14 @@
 		<TableRow>
 			<TextView android:text="@string/filename"
 				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-			<EditText android:id="@+id/filename" android:layout_width="wrap_content"
+			<EditText android:id="@+id/filename" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 		</TableRow>
 		<TableRow>
-			<TextView android:text="@string/filename"
+			<TextView android:text="@string/description"
 				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-			<EditText android:id="@+id/description" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" />
+			<EditText android:id="@+id/description" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:lines="5" />
 		</TableRow>
 	</TableLayout>
 

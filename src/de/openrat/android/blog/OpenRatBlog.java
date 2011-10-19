@@ -19,58 +19,80 @@
 package de.openrat.android.blog;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import de.openrat.android.blog.adapter.SimpleNameAdapter;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
+import de.openrat.android.blog.util.ServerList;
 import de.openrat.client.OpenRatClient;
 
 /**
  * @author Jan Dankert
  */
-public class OpenRatBlog extends Activity
+public class OpenRatBlog extends ListActivity
 {
 	private static final String PREFS_NAME = "OR_BLOG_PREFS";
 	private OpenRatClient client;
+	private List<String> serverList;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.listing);
 
-		final SharedPreferences prefs = PreferenceManager
+		ImageView image = (ImageView) findViewById(R.id.listimage);
+		image.setImageResource(R.drawable.openrat);
+		image.setVisibility(View.VISIBLE);
+
+		TextView title = (TextView) findViewById(R.id.listtitle);
+		title.setText(getResources().getString(R.string.connect));
+		title.setVisibility(View.VISIBLE);
+
+		SharedPreferences globalPrefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
+		serverList = Arrays.asList(TextUtils.split(globalPrefs.getString(
+				"server", ""), ","));
 
-		int port = Integer.parseInt(prefs.getString("port", "80"));
-		String path = prefs.getString("path", "/");
-		String host = prefs.getString("hostname", "");
+		ArrayList<String> list = new ArrayList<String>();
+		for (String server : serverList)
+		{
+			SharedPreferences preferences = getSharedPreferences(server,
+					MODE_PRIVATE);
 
-		client = new OpenRatClient(host, path, port);
+			list.add(preferences.getString("name", "?"));
+		}
 
-		@SuppressWarnings("unused")
-		TextView tv = (TextView) findViewById(R.id.hello);
+		SimpleNameAdapter adapter = new SimpleNameAdapter(this, list);
 
-		View connect = findViewById(R.id.connect);
-		connect.setOnClickListener(new OnClickListener()
+		ListView lv = getListView();
+		lv.setAdapter(adapter);
+
+		lv.setOnItemClickListener(new OnItemClickListener()
 		{
 
 			@Override
-			public void onClick(View v)
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					final int pos, long rowId)
 			{
 				new OpenRatClientAsyncTask(OpenRatBlog.this,
 						R.string.waitingforlogin)
@@ -78,6 +100,16 @@ public class OpenRatBlog extends Activity
 					@Override
 					protected void callServer() throws IOException
 					{
+						SharedPreferences prefs = getSharedPreferences(
+								serverList.get(pos), MODE_PRIVATE);
+
+						int port = Integer.parseInt(prefs.getString("port",
+								"80"));
+						String path = prefs.getString("path", "/");
+						String host = prefs.getString("hostname", "");
+
+						client = new OpenRatClient(host, path, port);
+
 						client.login(prefs.getString("username", ""), prefs
 								.getString("password", ""));
 
@@ -95,6 +127,20 @@ public class OpenRatBlog extends Activity
 
 				}.execute();
 
+			}
+
+		});
+
+		lv.setOnItemLongClickListener(new OnItemLongClickListener()
+		{
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					final int pos, long rowId)
+			{
+				Intent intent = new Intent(OpenRatBlog.this, Server.class);
+				intent.putExtra(Server.NAME, serverList.get(pos));
+				startActivity(intent);
+				return true;
 			}
 		});
 
@@ -116,6 +162,21 @@ public class OpenRatBlog extends Activity
 		{
 			case R.id.menu_preferences:
 				startActivity(new Intent(this, Configuration.class));
+				return true;
+			case R.id.menu_newserver:
+
+				SharedPreferences globalPrefs = PreferenceManager
+						.getDefaultSharedPreferences(this);
+				String newServername = "" + System.currentTimeMillis();
+
+				ServerList list = new ServerList(globalPrefs.getString(
+						"server", "")).addServer(newServername);
+				globalPrefs.edit().putString("server", list.toPlain()).commit();
+
+				Intent intent = new Intent(this, Server.class);
+				intent.putExtra(Server.NAME, newServername);
+				startActivity(intent);
+				return true;
 		}
 		return false;
 	}
@@ -134,5 +195,4 @@ public class OpenRatBlog extends Activity
 		// Don't forget to commit your edits!!!
 		editor.commit();
 	}
-
 }

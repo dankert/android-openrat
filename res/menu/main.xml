@@ -1,4 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/menu_preferences" android:title="@string/preferences" android:icon="@android:drawable/ic_menu_preferences"></item>
+	<item android:id="@+id/menu_newserver" android:title="@string/newserver"
+		android:icon="@android:drawable/ic_menu_add"></item>
+	<item android:id="@+id/menu_preferences" android:title="@string/preferences"
+		android:icon="@android:drawable/ic_menu_preferences"></item>
 </menu>
  

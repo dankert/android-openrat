@@ -12,6 +12,7 @@
 		</activity>
 
 		<activity android:name="Configuration" android:label="@string/preferences"></activity>
+		<activity android:name="Server" android:label="@string/preferences"></activity>
 		<activity android:name="ProjectActivity" android:label="@string/project_list"></activity>
 		<activity android:name="FolderActivity" android:label="@string/folder_content"></activity>
 		<activity android:name="PageElementsActivity" android:label="@string/page_content"></activity>
