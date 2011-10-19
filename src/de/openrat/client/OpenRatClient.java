@@ -501,4 +501,21 @@ public class OpenRatClient extends CMSRequest
 
 		readJSON();
 	}
+
+	public void delete(String folderid, String ids) throws IOException
+	{
+		super.clearParameters();
+		super.setMethod("POST");
+		super.setAction("folder");
+		super.setActionMethod("multiple");
+		super.setId(folderid);
+
+		super.setParameter("type", "delete");
+		super.setParameter("ids", ids);
+		super.setParameter("commit", "1");
+		
+		
+		readJSON();
+		
+	}
 }

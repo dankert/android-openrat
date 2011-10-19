@@ -45,6 +45,7 @@ import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.service.PublishIntentService;
 import de.openrat.android.blog.service.UploadIntentService;
+import de.openrat.android.blog.util.OpenRatClientAsyncTask;
 import de.openrat.client.CMSRequest;
 import de.openrat.client.OpenRatClient;
 
@@ -225,7 +226,7 @@ public class FolderActivity extends ListActivity
 						.getMenuInfo();
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage("Sicher?").setCancelable(false)
+				builder.setMessage( getResources().getString(R.string.areyousure)).setCancelable(false)
 						.setPositiveButton(
 								getResources().getString(R.string.delete),
 								new DialogInterface.OnClickListener()
@@ -233,53 +234,17 @@ public class FolderActivity extends ListActivity
 									public void onClick(DialogInterface dialog,
 											int id)
 									{
-										// To get the id of the clicked item in
-										// the
-										// list use menuInfo.id
-										FolderEntry en = data
+										final FolderEntry en = data
 												.get(mInfo.position);
-
-										client.clearParameters();
-										client.trace = true;
-										client.setMethod("POST");
-										client.setAction("folder");
-										client.setActionMethod("multiple");
-										client.setId(folderid);
-
-										client.setParameter("type", "delete");
-										client.setParameter("ids", en.id);
-										// Erstmal alles aktivieren was geht
-										// TODO: Abfrage der gewünschten
-										// Einstellungen über AlertDialog.
-										client.setParameter("commit", "1");
-										String response = null;
-
-										// the next two lines initialize the
-										// Notification, using the
-										// configurations above
-
-										try
+										
+										new OpenRatClientAsyncTask(FolderActivity.this,R.string.waitingfordelete)
 										{
-											response = client.performRequest();
-											JSONObject json = new JSONObject(
-													response);
-											System.out.println("nachlöschen: "
-													+ response);
-
-										}
-										catch (IOException e)
-										{
-											// System.err.println(response);
-											System.err.println(e.getMessage());
-										}
-										catch (JSONException e)
-										{
-											e.printStackTrace();
-										}
-										finally
-										{
-										}
-										;
+											@Override
+											protected void callServer() throws IOException
+											{
+												client.delete(folderid, en.id);
+											}
+										}.execute();
 									}
 								});
 				AlertDialog alert = builder.create();
@@ -314,8 +279,6 @@ public class FolderActivity extends ListActivity
 				return super.onContextItemSelected(item);
 
 		}
-
-		// return true;
 
 	}
 
@@ -366,14 +329,14 @@ public class FolderActivity extends ListActivity
 				Intent intent;
 				chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
 				chooseFile.setType("file/*");
-				intent = Intent.createChooser(chooseFile, "Choose a file");
+				intent = Intent.createChooser(chooseFile, getResources().getString(R.string.choosefile));
 				startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
 				return true;
 			case R.id.menu_upload_image:
 
 				chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
 				chooseFile.setType("image/*");
-				intent = Intent.createChooser(chooseFile, "Choose an image");
+				intent = Intent.createChooser(chooseFile,getResources().getString(R.string.chooseimage));
 				startActivityForResult(intent, ACTIVITY_CHOOSE_IMAGE);
 				return true;
 
