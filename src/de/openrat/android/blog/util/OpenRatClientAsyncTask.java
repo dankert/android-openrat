@@ -15,6 +15,20 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 /**
+ * Ein asynchroner Task für den Zugriff auf den OpenRat-CMS-Server. Der Aufruf
+ * des Servers muss in der zu überschreibenden Methode {@link #callServer()}
+ * durchgeführt werden.<br>
+ * <br>
+ * <br>
+ * Während der Serverabfrage wird ein {@link ProgressDialog} angezeigt. Falls
+ * die Abfrage nicht erfolgreich ist, wird automatisch ein {@link AlertDialog}
+ * mit einer Fehlermeldung angezeigt.<br>
+ * <br>
+ * <br>
+ * Durch überschreiben von {@link #doOnError(IOException)} kann selber auf einen
+ * Fehler reagiert werden. Durch Überschreiben von {@link #doOnSuccess()} kann
+ * eine Aktion nach erfolgreicher Serveranfrage ausgeführt werden. <br>
+ * 
  * @author dankert
  * 
  */
@@ -26,6 +40,12 @@ public abstract class OpenRatClientAsyncTask extends
 	private AlertDialog alertDialog;
 	private IOException error;
 
+	/**
+	 * @param context
+	 *            Context des Aufrufers
+	 * @param message
+	 *            Resource-Id für den Text im {@link ProgressDialog}.
+	 */
 	public OpenRatClientAsyncTask(Context context, int message)
 	{
 		this.context = context;
@@ -38,9 +58,6 @@ public abstract class OpenRatClientAsyncTask extends
 	@Override
 	final protected void onPreExecute()
 	{
-		// dialog.setTitle(getResources().getString(R.string.loading));
-		// dialog.setMessage(getResources().getString(
-		// R.string.waitingforcontent));
 		progressDialog.show();
 	}
 
@@ -102,8 +119,12 @@ public abstract class OpenRatClientAsyncTask extends
 	{
 	}
 
+	/**
+	 * Startet die Serveranfrage und fängt auftretene Fehler.
+	 * @see android.os.AsyncTask#doInBackground(Params[])
+	 */
 	@Override
-	protected Void doInBackground(Void... params)
+	final protected Void doInBackground(Void... params)
 	{
 		try
 		{
@@ -119,7 +140,10 @@ public abstract class OpenRatClientAsyncTask extends
 	}
 
 	/**
-	 * @throws IOException
+	 * Ausführen der Serveranfrage. Auftretene {@link IOException} sollte
+	 * weitergeworfen werden, da daraus ein {@link AlertDialog} erzeugt wird.
+	 * 
+	 * @throws IOException Vom Server erzeugte Fehler
 	 */
 	protected abstract void callServer() throws IOException;
 }
