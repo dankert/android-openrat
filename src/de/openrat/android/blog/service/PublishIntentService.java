@@ -65,7 +65,7 @@ public class PublishIntentService extends IntentService
 
 		final Notification notification = new Notification(
 				R.drawable.logo, getResources().getString(
-						R.string.publish), System.currentTimeMillis());
+						R.string.publish_long), System.currentTimeMillis());
 		notification.setLatestEventInfo(getApplicationContext(),
 				getResources().getString(R.string.publish), name,
 				contentIntent);
@@ -75,14 +75,6 @@ public class PublishIntentService extends IntentService
 
 		try
 		{
-			try
-			{
-				Thread.sleep(5000);
-			}
-			catch (InterruptedException e)
-			{
-			}
-			
 			int old = client.setTimeout(3600000); // 1 Std.
 			client.publish(type, id);
 			client.setTimeout(old);
@@ -91,12 +83,14 @@ public class PublishIntentService extends IntentService
 			notification.setLatestEventInfo(getApplicationContext(),
 					getResources().getString(R.string.publish_ok),
 					name, contentIntent);
+			notification.tickerText = getResources().getString(R.string.publish_ok_long);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			nm.notify(NOTIFICATION_PUBLISH, notification);
 		}
 		catch (IOException e)
 		{
 			final String msgText = getResources().getString(R.string.publish_fail);
+			notification.tickerText = getResources().getString(R.string.publish_fail_long);
 			notification.setLatestEventInfo(getApplicationContext(),
 					msgText,
 					name, contentIntent);

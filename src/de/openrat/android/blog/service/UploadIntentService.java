@@ -53,10 +53,10 @@ public class UploadIntentService extends IntentService
 				notificationIntent, 0);
 
 		final File file = new File(filePath);
-		final String msgUpload = getResources().getString(R.string.upload);
+		final String tickerText = getResources().getString(R.string.upload_long);
 		final Notification notification = new Notification(R.drawable.logo,
-				msgUpload, System.currentTimeMillis());
-		notification.setLatestEventInfo(getApplicationContext(), msgUpload,
+				tickerText, System.currentTimeMillis());
+		notification.setLatestEventInfo(getApplicationContext(), getResources().getString(R.string.upload),
 				file.getName(), contentIntent);
 		notification.flags = Notification.FLAG_ONGOING_EVENT
 				| Notification.FLAG_NO_CLEAR;
@@ -78,6 +78,7 @@ public class UploadIntentService extends IntentService
 
 			// Alles OK.
 			final String msgText = getResources().getString(R.string.upload_ok);
+			notification.tickerText = getResources().getString(R.string.upload_ok_long);
 			notification.setLatestEventInfo(getApplicationContext(), msgText,
 					file.getName(), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
@@ -89,6 +90,7 @@ public class UploadIntentService extends IntentService
 			// Fehler ist aufgetreten.
 			final String msgText = getResources().getString(
 					R.string.upload_fail);
+			notification.tickerText = getResources().getString(R.string.upload_fail_long);
 			notification.setLatestEventInfo(getApplicationContext(), msgText, e
 					.getMessage()
 					+ ": " + file.getName(), contentIntent);
