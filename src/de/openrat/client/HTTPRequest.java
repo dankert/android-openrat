@@ -486,8 +486,8 @@ public class HTTPRequest implements Serializable
 			{
 
 				// non-200-status seems to be an error.
-				throw new IOException("No HTTP 200: Status=" + httpRetCode
-						+ " (" + httpResponse + ")");
+				//throw new IOException("No HTTP 200: Status=" + httpRetCode
+					//	+ " (" + httpResponse + ")");
 			}
 
 			while (true)

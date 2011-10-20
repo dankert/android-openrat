@@ -69,19 +69,10 @@ public class FolderActivity extends ListActivity
 			protected void callServer() throws IOException
 			{
 				folderid = getIntent().getStringExtra("folderid");
-				try
-				{
 					if (folderid == null)
 						folderid = client.getRootFolder();
 
-					data = client.getFolderEntries(folderid);
-				}
-				catch (IOException e)
-				{
-					Log.e(this.getClass().getName(), e.getMessage(), e);
-					Toast.makeText(FolderActivity.this, e.getMessage(),
-							Toast.LENGTH_SHORT);
-				}
+				data = client.getFolderEntries(folderid);
 			}
 
 			protected void doOnSuccess()
@@ -119,7 +110,7 @@ public class FolderActivity extends ListActivity
 						intent = new Intent(FolderActivity.this,
 								PageElementsActivity.class);
 						intent.putExtra(CLIENT, client);
-						intent.putExtra("pageid", entry.id);
+						intent.putExtra(PageElementsActivity.ID, entry.id);
 						startActivity(intent);
 					default:
 				}

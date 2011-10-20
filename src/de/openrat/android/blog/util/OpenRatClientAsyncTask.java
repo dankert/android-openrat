@@ -51,7 +51,7 @@ public abstract class OpenRatClientAsyncTask extends
 		this.context = context;
 
 		this.progressDialog = new ProgressDialog(context);
-		progressDialog.setTitle(R.string.loading);
+		// progressDialog.setTitle(R.string.loading);
 		progressDialog.setMessage(context.getResources().getString(message));
 	}
 
@@ -121,6 +121,7 @@ public abstract class OpenRatClientAsyncTask extends
 
 	/**
 	 * Startet die Serveranfrage und fängt auftretene Fehler.
+	 * 
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
@@ -143,7 +144,8 @@ public abstract class OpenRatClientAsyncTask extends
 	 * Ausführen der Serveranfrage. Auftretene {@link IOException} sollte
 	 * weitergeworfen werden, da daraus ein {@link AlertDialog} erzeugt wird.
 	 * 
-	 * @throws IOException Vom Server erzeugte Fehler
+	 * @throws IOException
+	 *             Vom Server erzeugte Fehler
 	 */
 	protected abstract void callServer() throws IOException;
 }

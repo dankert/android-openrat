@@ -93,6 +93,52 @@ public class OpenRatClient extends CMSRequest
 	}
 
 	/**
+	 * Liest den Inhalt für ein Seitenelement.
+	 * 
+	 * @return
+	 */
+	public String getValue(String pageid, String elementid) throws IOException
+	{
+		clearParameters();
+		setAction("pageelement");
+		setActionMethod("edit");
+		setId(pageid);
+		setParameter("elementid", elementid);
+
+		JSONObject json = readJSON();
+
+		try
+		{
+			String value = json.getString("value");
+			return value;
+		}
+		catch (JSONException e)
+		{
+			throw new OpenRatClientException(
+					"JSON-Error while resolving root folder", e);
+		}
+	}
+
+	/**
+	 * Setzt einen neuen Inhalt für ein Seitenelement.
+	 * 
+	 * @return
+	 */
+	public void setValue(String pageid, String elementid, String value)
+			throws IOException
+	{
+		clearParameters();
+		setAction("pageelement");
+		setActionMethod("save");
+		setId(pageid);
+		setParameter("elementid", elementid);
+		setParameter("value", value);
+		setMethod("POST");
+
+		readJSON();
+	}
+
+	/**
 	 * Ermittelt den Inhalt eines Ordners.
 	 * 
 	 * @param folderid
@@ -149,6 +195,7 @@ public class OpenRatClient extends CMSRequest
 		try
 		{
 			response = super.performRequest();
+			Log.d("client", "Server-Response:\n" + response);
 		}
 		catch (SocketTimeoutException e)
 		{
@@ -395,9 +442,44 @@ public class OpenRatClient extends CMSRequest
 		super.setAction("index");
 		super.setActionMethod("project");
 		super.setParameter("id", projectid);
-		super.setMethod("POST");
+		//super.setMethod("POST");
 
 		readJSON();
+	}
+
+	public Map<String, String> getPageElements(String id) throws IOException
+	{
+
+		Map<String, String> el = new HashMap<String, String>();
+		super.clearParameters();
+		super.setAction("page");
+		super.setActionMethod("el");
+		super.setId(id);
+
+		JSONObject json = readJSON();
+
+		final Map<String, String> elementMap = new LinkedHashMap<String, String>();
+
+		try
+		{
+			JSONObject elements = json.getJSONObject("el");
+
+			for (Iterator ti = elements.keys(); ti.hasNext();)
+			{
+				String elementId = (String) ti.next();
+				String pageelementName = elements.getJSONObject(elementId)
+						.getString("name");
+				elementMap.put(elementId, pageelementName);
+			}
+		}
+		catch (JSONException e)
+		{
+			Log.w(this.getClass().getSimpleName(), "\n\n" + json);
+			throw new OpenRatClientException("a property was not found", e);
+		}
+
+		return elementMap;
+
 	}
 
 	public Map<String, String> getProperties(String type, String id)

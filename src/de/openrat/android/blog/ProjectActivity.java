@@ -95,6 +95,9 @@ public class ProjectActivity extends ListActivity
 						startActivity(i);
 
 					}
+					protected void doOnError(IOException error) {
+						super.doOnError(error);
+					};
 				}.execute();
 
 			}

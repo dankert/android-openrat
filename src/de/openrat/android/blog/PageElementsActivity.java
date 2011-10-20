@@ -3,13 +3,22 @@
  */
 package de.openrat.android.blog;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import de.openrat.android.blog.adapter.SimpleNameAdapter;
+import de.openrat.android.blog.util.OpenRatClientAsyncTask;
+import de.openrat.client.OpenRatClient;
 
 /**
  * @author dankert
@@ -17,21 +26,57 @@ import android.widget.SimpleAdapter;
  */
 public class PageElementsActivity extends ListActivity
 {
-	private static final String NAME = "name";
+	public static final String ID = "id";
+	public static final String CLIENT = "client";
+	private String objectid;
+	private OpenRatClient client;
+
+	Map<String, String> data;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.listing);
 
-		int[] to = new int[] { R.id.name };
-		String[] from = new String[] { NAME };
-		
-		ArrayList<Map<String,?>> list = new ArrayList<Map<String,?>>();
-		new SimpleAdapter(this,list,R.layout.listing_pageelement, from, to);
+		client = (OpenRatClient) getIntent().getSerializableExtra(CLIENT);
+
+		new OpenRatClientAsyncTask(this, R.string.waitingforcontent)
+		{
+
+			@Override
+			protected void callServer() throws IOException
+			{
+				objectid = getIntent().getStringExtra(ID);
+				data = client.getPageElements(objectid);
+			}
+
+			protected void doOnSuccess()
+			{
+				SimpleNameAdapter adapter = new SimpleNameAdapter(PageElementsActivity.this,
+						new ArrayList<String>(data.values()));
+				setListAdapter(adapter);
+			};
+
+		}.execute();
+
+
+		ListView list = getListView();
+		list.setOnItemClickListener(new OnItemClickListener()
+		{
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id)
+			{
+				String elementid = Arrays.asList(
+						data.keySet().toArray(new String[] {})).get(position);
+				Toast.makeText(PageElementsActivity.this, elementid+": "+data.get(elementid),
+						Toast.LENGTH_SHORT);
+
+			}
+		});
 
 	}
 
