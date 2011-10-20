@@ -73,4 +73,6 @@
 	<string name="server">Server</string>
 	<string name="timeout">Zeitablauf</string>
 	<string name="timeout_desc">Timeout der TCP/IP-Verbindung in Sekunden</string>
+	<string name="databaseid">Datenbank-Id</string>
+	<string name="databaseid_desc">Datenbank-Id aus der Server-Konfiguration</string>
 </resources>

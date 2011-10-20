@@ -311,11 +311,13 @@ public class OpenRatClient extends CMSRequest
 		JSONObject response = readJSON();
 	}
 
-	public void login(String login, String password) throws IOException
+	public void login(String login, String password, String database)
+			throws IOException
 	{
 		super.setParameter("action", "index");
 		super.setParameter("subaction", "login");
-		super.setParameter("dbid", "db1");
+		if (database.length() > 0)
+			super.setParameter("dbid", database);
 		super.setParameter("login_name", login);
 		super.setParameter("login_password", password);
 
@@ -513,9 +515,8 @@ public class OpenRatClient extends CMSRequest
 		super.setParameter("type", "delete");
 		super.setParameter("ids", ids);
 		super.setParameter("commit", "1");
-		
-		
+
 		readJSON();
-		
+
 	}
 }

@@ -10,6 +10,8 @@
 			android:defaultValue="80" android:title="@string/port"></EditTextPreference>
 		<EditTextPreference android:key="path"
 			android:defaultValue="/" android:title="@string/path"></EditTextPreference>
+		<EditTextPreference android:key="database"
+			android:title="@string/databaseid" android:summary="@string/databaseid_desc"></EditTextPreference>
 		<EditTextPreference android:key="username"
 			android:title="@string/username"></EditTextPreference>
 		<EditTextPreference android:key="password"

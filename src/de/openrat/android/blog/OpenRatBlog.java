@@ -107,11 +107,12 @@ public class OpenRatBlog extends ListActivity
 								"80"));
 						String path = prefs.getString("path", "/");
 						String host = prefs.getString("hostname", "");
+						String dbid = prefs.getString("database", "");
 
 						client = new OpenRatClient(host, path, port);
 
 						client.login(prefs.getString("username", ""), prefs
-								.getString("password", ""));
+								.getString("password", ""),dbid);
 
 					}
 
