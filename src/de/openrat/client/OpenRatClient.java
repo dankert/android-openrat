@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,8 +83,10 @@ public class OpenRatClient extends CMSRequest
 
 		try
 		{
-			String folderid = json.getJSONArray("zeilen").getJSONObject(1)
-					.getString("name");
+			String folderurl = json.getJSONArray("zeilen").getJSONObject(1)
+					.getString("url");
+			String[] urlParts = folderurl.split("[^0-9]+");
+			String folderid = urlParts[urlParts.length-1];
 			return folderid;
 		}
 		catch (JSONException e)
