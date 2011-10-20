@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -111,8 +112,10 @@ public class OpenRatBlog extends ListActivity
 
 						client = new OpenRatClient(host, path, port);
 
-						client.login(prefs.getString("username", ""), prefs
+						final String username = prefs.getString("username", "");
+						client.login(username, prefs
 								.getString("password", ""),dbid);
+						Log.d(OpenRatBlog.this.getClass().getSimpleName(), "User login: "+username );
 
 					}
 

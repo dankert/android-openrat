@@ -392,9 +392,10 @@ public class OpenRatClient extends CMSRequest
 	{
 
 		super.clearParameters();
-		super.setParameter("action", "index");
-		super.setParameter("subaction", "project");
+		super.setAction("index");
+		super.setActionMethod("project");
 		super.setParameter("id", projectid);
+		super.setMethod("POST");
 
 		readJSON();
 	}

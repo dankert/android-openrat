@@ -3,29 +3,17 @@
  */
 package de.openrat.android.blog;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -41,12 +29,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import de.openrat.android.blog.FolderEntry.FType;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.service.PublishIntentService;
 import de.openrat.android.blog.service.UploadIntentService;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
-import de.openrat.client.CMSRequest;
 import de.openrat.client.OpenRatClient;
 
 /**
@@ -77,55 +63,36 @@ public class FolderActivity extends ListActivity
 		data = new ArrayList<FolderEntry>();
 		client = (OpenRatClient) getIntent().getSerializableExtra(CLIENT);
 
-		AsyncTask<String, Void, List<FolderEntry>> loadTask = new AsyncTask<String, Void, List<FolderEntry>>()
+		new OpenRatClientAsyncTask(this, R.string.waitingforcontent)
 		{
-
-			ProgressDialog dialog = new ProgressDialog(FolderActivity.this);
-
 			@Override
-			protected void onPreExecute()
+			protected void callServer() throws IOException
 			{
-				dialog.setTitle(getResources().getString(R.string.loading));
-				dialog.setMessage(getResources().getString(
-						R.string.waitingforcontent));
-				dialog.show();
+				folderid = getIntent().getStringExtra("folderid");
+				try
+				{
+					if (folderid == null)
+						folderid = client.getRootFolder();
+
+					data = client.getFolderEntries(folderid);
+				}
+				catch (IOException e)
+				{
+					Log.e(this.getClass().getName(), e.getMessage(), e);
+					Toast.makeText(FolderActivity.this, e.getMessage(),
+							Toast.LENGTH_SHORT);
+				}
 			}
 
-			protected void onPostExecute(List<FolderEntry> result)
+			protected void doOnSuccess()
 			{
-				dialog.dismiss();
-
 				final ListAdapter adapter = new FolderContentAdapter(
 						FolderActivity.this, data);
 				setListAdapter(adapter);
 			};
 
-			@Override
-			protected List<FolderEntry> doInBackground(String... params)
-			{
-				//
-				folderid = getIntent().getStringExtra("folderid");
-				try
-				{
-					if	( folderid == null )
-						folderid = client.getRootFolder();
-					
-					data = client.getFolderEntries(folderid);
-				}
-				catch (IOException e)
-				{
-					Log.e(this.getClass().getName(),e.getMessage(),e);
-					Toast.makeText(FolderActivity.this,e.getMessage(),Toast.LENGTH_SHORT);
-				}
-				
-				return data;
-			}
-		};
-
-		loadTask.execute();
-		// final ListAdapter adapter = new SimpleAdapter(this, data,
-		// R.layout.listing_entry, from, to);
-
+		}.execute();
+		
 		ListView list = getListView();
 
 		list.setOnItemClickListener(new OnItemClickListener()
@@ -226,8 +193,9 @@ public class FolderActivity extends ListActivity
 						.getMenuInfo();
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage( getResources().getString(R.string.areyousure)).setCancelable(false)
-						.setPositiveButton(
+				builder.setMessage(
+						getResources().getString(R.string.areyousure))
+						.setCancelable(false).setPositiveButton(
 								getResources().getString(R.string.delete),
 								new DialogInterface.OnClickListener()
 								{
@@ -236,11 +204,14 @@ public class FolderActivity extends ListActivity
 									{
 										final FolderEntry en = data
 												.get(mInfo.position);
-										
-										new OpenRatClientAsyncTask(FolderActivity.this,R.string.waitingfordelete)
+
+										new OpenRatClientAsyncTask(
+												FolderActivity.this,
+												R.string.waitingfordelete)
 										{
 											@Override
-											protected void callServer() throws IOException
+											protected void callServer()
+													throws IOException
 											{
 												client.delete(folderid, en.id);
 											}
@@ -329,14 +300,16 @@ public class FolderActivity extends ListActivity
 				Intent intent;
 				chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
 				chooseFile.setType("file/*");
-				intent = Intent.createChooser(chooseFile, getResources().getString(R.string.choosefile));
+				intent = Intent.createChooser(chooseFile, getResources()
+						.getString(R.string.choosefile));
 				startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
 				return true;
 			case R.id.menu_upload_image:
 
 				chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
 				chooseFile.setType("image/*");
-				intent = Intent.createChooser(chooseFile,getResources().getString(R.string.chooseimage));
+				intent = Intent.createChooser(chooseFile, getResources()
+						.getString(R.string.chooseimage));
 				startActivityForResult(intent, ACTIVITY_CHOOSE_IMAGE);
 				return true;
 
