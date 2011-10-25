@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Map;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import de.openrat.android.blog.adapter.SimpleNameAdapter;
@@ -54,13 +54,13 @@ public class PageElementsActivity extends ListActivity
 
 			protected void doOnSuccess()
 			{
-				SimpleNameAdapter adapter = new SimpleNameAdapter(PageElementsActivity.this,
-						new ArrayList<String>(data.values()));
+				SimpleNameAdapter adapter = new SimpleNameAdapter(
+						PageElementsActivity.this, new ArrayList<String>(data
+								.values()));
 				setListAdapter(adapter);
-			};
+			}
 
 		}.execute();
-
 
 		ListView list = getListView();
 		list.setOnItemClickListener(new OnItemClickListener()
@@ -72,9 +72,13 @@ public class PageElementsActivity extends ListActivity
 			{
 				String elementid = Arrays.asList(
 						data.keySet().toArray(new String[] {})).get(position);
-				Toast.makeText(PageElementsActivity.this, elementid+": "+data.get(elementid),
-						Toast.LENGTH_SHORT);
 
+				Intent intent = new Intent(PageElementsActivity.this,
+						EditorActivity.class);
+				intent.putExtra(EditorActivity.ELEMENTID, elementid);
+				intent.putExtra(EditorActivity.OBJECTID, objectid);
+				intent.putExtra(EditorActivity.CLIENT, client);
+				startActivity(intent);
 			}
 		});
 

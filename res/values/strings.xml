@@ -33,6 +33,7 @@
 	<string name="waitingforlogin">Anmeldung am Server</string>
 	<string name="waitingfordelete">Löschen</string>
 	<string name="waitingfornew">Erzeuge</string>
+	<string name="waitingforsave">Speichern</string>
 	<string name="language">Sprache</string>
 	<string name="model">Variante</string>
 	<string name="new1">Neu</string>
@@ -75,4 +76,5 @@
 	<string name="timeout_desc">Timeout der TCP/IP-Verbindung in Sekunden</string>
 	<string name="databaseid">Datenbank-Id</string>
 	<string name="databaseid_desc">Datenbank-Id aus der Server-Konfiguration</string>
+	<string name="saved">Gespeichert</string>
 </resources>

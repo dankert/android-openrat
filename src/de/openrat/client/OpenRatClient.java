@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +84,7 @@ public class OpenRatClient extends CMSRequest
 			String folderurl = json.getJSONArray("zeilen").getJSONObject(1)
 					.getString("url");
 			String[] urlParts = folderurl.split("[^0-9]+");
-			String folderid = urlParts[urlParts.length-1];
+			String folderid = urlParts[urlParts.length - 1];
 			return folderid;
 		}
 		catch (JSONException e)
@@ -101,7 +99,8 @@ public class OpenRatClient extends CMSRequest
 	 * 
 	 * @return
 	 */
-	public String getValue(String pageid, String elementid) throws IOException
+	public Map<String, String> getValue(String pageid, String elementid)
+			throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
@@ -113,8 +112,11 @@ public class OpenRatClient extends CMSRequest
 
 		try
 		{
-			String value = json.getString("value");
-			return value;
+			final Map<String, String> properties = new HashMap<String, String>();
+
+			properties.put("type", json.getString("type"));
+			properties.put("text", json.optString("text"));
+			return properties;
 		}
 		catch (JSONException e)
 		{
@@ -128,15 +130,15 @@ public class OpenRatClient extends CMSRequest
 	 * 
 	 * @return
 	 */
-	public void setValue(String pageid, String elementid, String value)
-			throws IOException
+	public void setValue(String pageid, String elementid, String type,
+			String value) throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
 		setActionMethod("save");
 		setId(pageid);
 		setParameter("elementid", elementid);
-		setParameter("value", value);
+		setParameter("text", value);
 		setMethod("POST");
 
 		readJSON();
@@ -446,7 +448,7 @@ public class OpenRatClient extends CMSRequest
 		super.setAction("index");
 		super.setActionMethod("project");
 		super.setParameter("id", projectid);
-		//super.setMethod("POST");
+		// super.setMethod("POST");
 
 		readJSON();
 	}
