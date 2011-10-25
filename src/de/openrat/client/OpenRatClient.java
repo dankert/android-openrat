@@ -131,7 +131,7 @@ public class OpenRatClient extends CMSRequest
 	 * @return
 	 */
 	public void setValue(String pageid, String elementid, String type,
-			String value) throws IOException
+			String value,boolean release,boolean publish) throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
@@ -139,6 +139,8 @@ public class OpenRatClient extends CMSRequest
 		setId(pageid);
 		setParameter("elementid", elementid);
 		setParameter("text", value);
+		setParameter("release", release?"1":"0");
+		setParameter("publish", publish?"1":"0");
 		setMethod("POST");
 
 		readJSON();

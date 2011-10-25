@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
@@ -62,6 +63,8 @@ public class EditorActivity extends Activity
 						{
 							final String text = view.getEditableText()
 									.toString();
+							final CheckBox releaseBox = (CheckBox) findViewById(R.id.release);
+							
 							new OpenRatClientAsyncTask(EditorActivity.this,
 									R.string.waitingforsave)
 							{
@@ -70,7 +73,7 @@ public class EditorActivity extends Activity
 								protected void callServer() throws IOException
 								{
 									client.setValue(objectid, elementid,
-											"longtext", text);
+											"longtext", text, releaseBox.isChecked(), false);
 								}
 
 								protected void doOnSuccess()

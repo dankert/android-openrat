@@ -77,4 +77,5 @@
 	<string name="databaseid">Datenbank-Id</string>
 	<string name="databaseid_desc">Datenbank-Id aus der Server-Konfiguration</string>
 	<string name="saved">Gespeichert</string>
+	<string name="release">Freigeben</string>
 </resources>

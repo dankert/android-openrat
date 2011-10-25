@@ -11,6 +11,8 @@
 			android:layout_height="wrap_content">
 		</EditText>
 
+		<CheckBox android:id="@+id/release" android:text="@string/release"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></CheckBox>
 		<Button android:id="@+id/save" android:text="@string/save"
 			android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
