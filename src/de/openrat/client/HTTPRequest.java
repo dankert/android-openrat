@@ -22,6 +22,7 @@ package de.openrat.client;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -322,7 +323,7 @@ public class HTTPRequest implements Serializable
 	 * @throws IOException
 	 *             if server is unrechable or responds non-wellformed XML
 	 */
-	public String performRequest() throws IOException
+	public byte[] performRequest() throws IOException
 	{
 		return performRequest(null);
 	}
@@ -335,7 +336,7 @@ public class HTTPRequest implements Serializable
 	 * @throws IOException
 	 *             if server is unrechable or responds non-wellformed XML
 	 */
-	public String performRequest(String body) throws IOException
+	public byte[] performRequest(String body) throws IOException
 	{
 
 		final Socket socket = new Socket();
@@ -468,10 +469,10 @@ public class HTTPRequest implements Serializable
 			outputStream.flush();
 
 			final InputStream inputStream = socket.getInputStream();
-			final int available = inputStream.available();
+//			final int available = inputStream.available();
 
 			final BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(socket.getInputStream()));
+					new MyStreamReader(inputStream),1);
 
 			final String httpResponse = bufferedReader.readLine().trim();
 			final String httpRetCode = httpResponse.substring(9, 12);
@@ -501,20 +502,27 @@ public class HTTPRequest implements Serializable
 				if (this.trace)
 					System.out.println(responseHeader);
 			}
+			//inputStreamReader.reset();
+			//inputStream.reset();
 
-			StringBuffer response = new StringBuffer();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			
-			while (bufferedReader.ready())
-			{
-				response.append(bufferedReader.readLine() + "\n");
-			}
+			int nRead;
+			byte[] data = new byte[1024];
 
+			while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+			  buffer.write(data, 0, nRead);
+			}
+			buffer.flush();
+
+			byte[] response = buffer.toByteArray();
+			
 			if (this.trace)
 				System.out.println("--- response body ---");
 			if (this.trace)
 				System.out.println(response + "\n\n\n");
 
-			return response.toString();
+			return response;
 		} finally
 		{
 			try

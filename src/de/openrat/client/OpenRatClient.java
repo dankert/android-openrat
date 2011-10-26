@@ -2,6 +2,7 @@ package de.openrat.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,7 +132,7 @@ public class OpenRatClient extends CMSRequest
 	 * @return
 	 */
 	public void setValue(String pageid, String elementid, String type,
-			String value,boolean release,boolean publish) throws IOException
+			String value, boolean release, boolean publish) throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
@@ -139,8 +140,8 @@ public class OpenRatClient extends CMSRequest
 		setId(pageid);
 		setParameter("elementid", elementid);
 		setParameter("text", value);
-		setParameter("release", release?"1":"0");
-		setParameter("publish", publish?"1":"0");
+		setParameter("release", release ? "1" : "0");
+		setParameter("publish", publish ? "1" : "0");
 		setMethod("POST");
 
 		readJSON();
@@ -199,7 +200,7 @@ public class OpenRatClient extends CMSRequest
 
 	protected JSONObject readJSON() throws OpenRatClientException
 	{
-		String response;
+		byte[] response;
 		try
 		{
 			response = super.performRequest();
@@ -217,7 +218,17 @@ public class OpenRatClient extends CMSRequest
 
 		try
 		{
-			final JSONObject json = new JSONObject(response);
+			JSONObject json;
+			try
+			{
+				json = new JSONObject(
+						new String(response,"UTF-8"));
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				throw new OpenRatClientException(
+						"UTF-8 not supported?!", e1);
+			}
 
 			try
 			{
@@ -254,7 +265,7 @@ public class OpenRatClient extends CMSRequest
 		catch (JSONException e)
 		{
 			throw new OpenRatClientException(
-					"JSON Parsing Error. Original repsonse was:\n" + response,
+					"JSON Parsing Error. Original response was:\n" + new String(response)+"\n\n",
 					e);
 		}
 	}
@@ -618,8 +629,8 @@ public class OpenRatClient extends CMSRequest
 		super.setAction("file");
 		super.setActionMethod("show");
 		super.setId(objectid);
-		
-		final String content = performRequest();
-		return content.getBytes();
+
+		final byte[] content = performRequest();
+		return content;
 	}
 }
