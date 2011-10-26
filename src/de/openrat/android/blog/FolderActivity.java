@@ -112,6 +112,14 @@ public class FolderActivity extends ListActivity
 						intent.putExtra(CLIENT, client);
 						intent.putExtra(PageElementsActivity.ID, entry.id);
 						startActivity(intent);
+						break;
+					case FILE:
+						intent = new Intent(FolderActivity.this,
+								FileShowActivity.class);
+						intent.putExtra(CLIENT, client);
+						intent.putExtra(FileShowActivity.ID, entry.id);
+						startActivity(intent);
+						break;
 					default:
 				}
 			}

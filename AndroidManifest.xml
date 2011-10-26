@@ -18,11 +18,13 @@
 		<activity android:name="PageElementsActivity" android:label="@string/page_content"></activity>
 		<activity android:name="PropertiesActivity" android:label="@string/folder_properties"></activity>
 		<activity android:name="NewActivity" android:label="@string/new1"></activity>
+		<activity android:name="FileShowActivity" android:label="@string/filename">></activity>
 		<activity android:name="EditorActivity" android:label="@string/editor"></activity>
 
 		<service android:name=".service.PublishIntentService"></service>
 		<service android:name=".service.UploadIntentService"></service>
-	</application>
+	
+</application>
 
 	<uses-permission android:name="android.permission.INTERNET" />
 

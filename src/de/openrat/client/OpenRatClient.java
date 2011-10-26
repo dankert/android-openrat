@@ -610,4 +610,16 @@ public class OpenRatClient extends CMSRequest
 		readJSON();
 
 	}
+
+	public byte[] getFileContent(String objectid) throws IOException
+	{
+		super.clearParameters();
+		super.setMethod("POST");
+		super.setAction("file");
+		super.setActionMethod("show");
+		super.setId(objectid);
+		
+		final String content = performRequest();
+		return content.getBytes();
+	}
 }
