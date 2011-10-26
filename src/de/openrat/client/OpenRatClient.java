@@ -625,7 +625,7 @@ public class OpenRatClient extends CMSRequest
 	public byte[] getFileContent(String objectid) throws IOException
 	{
 		super.clearParameters();
-		super.setMethod("POST");
+		super.setMethod("GET");
 		super.setAction("file");
 		super.setActionMethod("show");
 		super.setId(objectid);

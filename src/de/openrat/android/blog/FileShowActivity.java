@@ -5,7 +5,7 @@ package de.openrat.android.blog;
 
 import java.io.IOException;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,7 +17,7 @@ import de.openrat.client.OpenRatClient;
  * @author dankert
  * 
  */
-public class FileShowActivity extends ListActivity
+public class FileShowActivity extends Activity
 {
 	public static final String ID = "id";
 	public static final String CLIENT = "client";
