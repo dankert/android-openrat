@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.openrat.android.blog.adapter;
+package de.openrat.android.client.adapter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.openrat.android.blog.util;
+package de.openrat.android.client.util;
 
 import java.io.File;
 import java.io.FileInputStream;

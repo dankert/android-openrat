@@ -30,10 +30,10 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import de.openrat.android.blog.R;
-import de.openrat.android.blog.adapter.FolderContentAdapter;
-import de.openrat.android.blog.service.PublishIntentService;
-import de.openrat.android.blog.service.UploadIntentService;
-import de.openrat.android.blog.util.OpenRatClientAsyncTask;
+import de.openrat.android.client.adapter.FolderContentAdapter;
+import de.openrat.android.client.service.PublishIntentService;
+import de.openrat.android.client.service.UploadIntentService;
+import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 
 /**

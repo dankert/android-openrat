@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import de.openrat.android.blog.R;
-import de.openrat.android.blog.util.ServerList;
+import de.openrat.android.client.util.ServerList;
 
 public class Server extends PreferenceActivity
 {

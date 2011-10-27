@@ -13,7 +13,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import de.openrat.android.blog.R;
-import de.openrat.android.blog.util.OpenRatClientAsyncTask;
+import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 
 public class EditorActivity extends Activity

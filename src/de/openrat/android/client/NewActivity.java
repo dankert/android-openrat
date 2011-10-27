@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import de.openrat.android.blog.R;
-import de.openrat.android.blog.util.OpenRatClientAsyncTask;
+import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 
 public class NewActivity extends Activity

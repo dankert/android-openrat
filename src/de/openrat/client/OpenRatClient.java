@@ -16,9 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-import de.openrat.android.blog.util.FileUtils;
 import de.openrat.android.client.FolderEntry;
 import de.openrat.android.client.FolderEntry.FType;
+import de.openrat.android.client.util.FileUtils;
 
 /**
  * Komfortabler Zugriff auf das OpenRat-CMS.

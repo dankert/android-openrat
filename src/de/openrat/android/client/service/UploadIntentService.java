@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.openrat.android.blog.service;
+package de.openrat.android.client.service;
 
 import java.io.File;
 import java.io.IOException;
