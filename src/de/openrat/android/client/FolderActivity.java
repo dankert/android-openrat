@@ -194,7 +194,7 @@ public class FolderActivity extends ListActivity
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setMessage(
 						getResources().getString(R.string.areyousure))
-						.setCancelable(false).setPositiveButton(
+						.setCancelable(true).setPositiveButton(
 								getResources().getString(R.string.delete),
 								new DialogInterface.OnClickListener()
 								{
