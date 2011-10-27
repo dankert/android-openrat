@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
-import de.openrat.android.blog.R;
 import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 

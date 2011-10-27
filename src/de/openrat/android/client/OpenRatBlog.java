@@ -41,7 +41,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import de.openrat.android.blog.R;
 import de.openrat.android.client.adapter.SimpleNameAdapter;
 import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.android.client.util.ServerList;

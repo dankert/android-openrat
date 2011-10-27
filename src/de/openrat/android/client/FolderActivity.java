@@ -29,7 +29,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import de.openrat.android.blog.R;
 import de.openrat.android.client.adapter.FolderContentAdapter;
 import de.openrat.android.client.service.PublishIntentService;
 import de.openrat.android.client.service.UploadIntentService;

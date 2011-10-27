@@ -5,8 +5,6 @@ package de.openrat.android.client.util;
 
 import java.io.IOException;
 
-import de.openrat.android.blog.R;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;

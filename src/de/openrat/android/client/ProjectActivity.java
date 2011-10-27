@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
-import de.openrat.android.blog.R;
 import de.openrat.android.client.adapter.FolderContentAdapter;
 import de.openrat.android.client.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
