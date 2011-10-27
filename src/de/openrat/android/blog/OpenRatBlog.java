@@ -83,7 +83,8 @@ public class OpenRatBlog extends ListActivity
 			list.add(preferences.getString("name", "?"));
 		}
 
-		SimpleNameAdapter adapter = new SimpleNameAdapter(this, list);
+		final SimpleNameAdapter adapter = new SimpleNameAdapter(this, list,
+				android.R.drawable.ic_menu_set_as);
 
 		ListView lv = getListView();
 		lv.setAdapter(adapter);
@@ -113,9 +114,10 @@ public class OpenRatBlog extends ListActivity
 						client = new OpenRatClient(host, path, port);
 
 						final String username = prefs.getString("username", "");
-						client.login(username, prefs
-								.getString("password", ""),dbid);
-						Log.d(OpenRatBlog.this.getClass().getSimpleName(), "User login: "+username );
+						client.login(username, prefs.getString("password", ""),
+								dbid);
+						Log.d(OpenRatBlog.this.getClass().getSimpleName(),
+								"User login: " + username);
 
 					}
 

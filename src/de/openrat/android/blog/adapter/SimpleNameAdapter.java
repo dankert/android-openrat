@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import de.openrat.android.blog.R;
 
@@ -28,11 +29,14 @@ public class SimpleNameAdapter extends BaseAdapter
 
 	private LayoutInflater inflator;
 
-	public SimpleNameAdapter(Context context, List<String> data)
+	private int imageRes;
+
+	public SimpleNameAdapter(Context context, List<String> data, int imageRes)
 	{
 		inflator = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.data = data;
+		this.imageRes = imageRes;
 	}
 
 	public int getCount()
@@ -60,10 +64,18 @@ public class SimpleNameAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 
-		final View view = inflator.inflate(R.layout.listing_pageelement, null);
+		final View view = inflator.inflate(R.layout.listing_entry, null);
+		
+		final ImageView image = (ImageView) view
+				.findViewById(R.id.listentry_image);
+		image.setImageResource(imageRes);
 
-		TextView name = (TextView) view.findViewById(R.id.name);
+		final TextView name = (TextView) view.findViewById(R.id.listentry_name);
 		name.setText(data.get(position));
+
+		final TextView desc = (TextView) view
+				.findViewById(R.id.listentry_description);
+		desc.setText("");
 
 		return view;
 	}

@@ -56,7 +56,7 @@ public class PageElementsActivity extends ListActivity
 			{
 				SimpleNameAdapter adapter = new SimpleNameAdapter(
 						PageElementsActivity.this, new ArrayList<String>(data
-								.values()));
+								.values()), android.R.drawable.ic_menu_edit);
 				setListAdapter(adapter);
 			}
 
