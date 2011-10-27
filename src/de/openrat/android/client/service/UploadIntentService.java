@@ -64,14 +64,6 @@ public class UploadIntentService extends IntentService
 
 		try
 		{
-			try
-			{
-				Thread.sleep(5000);
-			}
-			catch (InterruptedException e)
-			{
-			}
-
 			int old = client.setTimeout(3600000); // 1 Std.
 			client.uploadFile(EXTRA_FILENAME, file);
 			client.setTimeout(old);
