@@ -49,7 +49,7 @@ import de.openrat.client.OpenRatClient;
 /**
  * @author Jan Dankert
  */
-public class OpenRatBlog extends ListActivity
+public class OpenRatActivity extends ListActivity
 {
 	private static final String PREFS_NAME = "OR_BLOG_PREFS";
 	private OpenRatClient client;
@@ -90,6 +90,7 @@ public class OpenRatBlog extends ListActivity
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getResources().getString(R.string.noserver));
 			AlertDialog alert = builder.create();
+			alert.show();
 		}
 
 		final SimpleNameAdapter adapter = new SimpleNameAdapter(this, list,
@@ -105,7 +106,7 @@ public class OpenRatBlog extends ListActivity
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					final int pos, long rowId)
 			{
-				new OpenRatClientAsyncTask(OpenRatBlog.this,
+				new OpenRatClientAsyncTask(OpenRatActivity.this,
 						R.string.waitingforlogin)
 				{
 					@Override
@@ -125,7 +126,7 @@ public class OpenRatBlog extends ListActivity
 						final String username = prefs.getString("username", "");
 						client.login(username, prefs.getString("password", ""),
 								dbid);
-						Log.d(OpenRatBlog.this.getClass().getSimpleName(),
+						Log.d(OpenRatActivity.this.getClass().getSimpleName(),
 								"User login: " + username);
 
 					}
@@ -134,7 +135,7 @@ public class OpenRatBlog extends ListActivity
 					{
 						// Verbindung und Login waren erfolgreich.
 						// Jetzt zur Projekt-Liste wechseln.
-						final Intent intent = new Intent(OpenRatBlog.this,
+						final Intent intent = new Intent(OpenRatActivity.this,
 								ProjectActivity.class);
 						intent.putExtra(ProjectActivity.CLIENT, client);
 						startActivity(intent);
@@ -152,7 +153,7 @@ public class OpenRatBlog extends ListActivity
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					final int pos, long rowId)
 			{
-				Intent intent = new Intent(OpenRatBlog.this, Server.class);
+				Intent intent = new Intent(OpenRatActivity.this, Server.class);
 				intent.putExtra(Server.NAME, serverList.get(pos));
 				startActivity(intent);
 				return true;
