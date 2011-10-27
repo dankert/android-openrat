@@ -1,4 +1,4 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 public class FolderEntry
 {

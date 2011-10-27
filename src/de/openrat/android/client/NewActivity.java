@@ -1,4 +1,4 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import de.openrat.android.blog.R;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 

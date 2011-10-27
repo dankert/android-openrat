@@ -1,4 +1,4 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import de.openrat.android.blog.R;
 import de.openrat.android.blog.util.ServerList;
 
 public class Server extends PreferenceActivity

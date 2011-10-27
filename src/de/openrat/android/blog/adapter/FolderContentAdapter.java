@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.openrat.android.blog.FolderEntry;
 import de.openrat.android.blog.R;
+import de.openrat.android.client.FolderEntry;
 
 /**
  * @author dankert

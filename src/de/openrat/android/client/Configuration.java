@@ -1,5 +1,6 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
+import de.openrat.android.blog.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 

@@ -1,4 +1,4 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+import de.openrat.android.blog.R;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 

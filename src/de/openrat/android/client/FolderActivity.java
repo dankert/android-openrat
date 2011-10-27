@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import de.openrat.android.blog.R;
 import de.openrat.android.blog.adapter.FolderContentAdapter;
 import de.openrat.android.blog.service.PublishIntentService;
 import de.openrat.android.blog.service.UploadIntentService;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
+import de.openrat.android.blog.R;
 import de.openrat.android.blog.util.OpenRatClientAsyncTask;
 import de.openrat.client.OpenRatClient;
 

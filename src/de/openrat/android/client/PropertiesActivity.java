@@ -1,4 +1,4 @@
-package de.openrat.android.blog;
+package de.openrat.android.client;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
+import de.openrat.android.blog.R;
 import de.openrat.client.OpenRatClient;
 
 public class PropertiesActivity extends Activity
