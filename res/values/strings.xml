@@ -34,6 +34,8 @@
 	<string name="waitingfordelete">Löschen</string>
 	<string name="waitingfornew">Erzeuge</string>
 	<string name="waitingforsave">Speichern</string>
+	<string name="waitingforlanguageload">Verfügbare Sprachen werden geladen</string>
+	<string name="waitingforlanguagesave">Ausgewählte Sprache wird aktiviert</string>
 	<string name="language">Sprache</string>
 	<string name="model">Variante</string>
 	<string name="new1">Neu</string>
@@ -78,4 +80,6 @@
 	<string name="databaseid_desc">Datenbank-Id aus der Server-Konfiguration</string>
 	<string name="saved">Gespeichert</string>
 	<string name="release">Freigeben</string>
+	<string name="noserver">Es ist noch kein Server konfiguriert. Über die Menütaste können Sie einen neuen Server anlegen.</string>
+	
 </resources>

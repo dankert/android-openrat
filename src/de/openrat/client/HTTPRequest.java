@@ -121,12 +121,12 @@ public class HTTPRequest implements Serializable
 		this.language = Locale.getDefault().getLanguage();
 	}
 
-	public String getLanguage()
+	public String getAcceptLanguage()
 	{
 		return language;
 	}
 
-	public void setLanguage(String language)
+	public void setAcceptLanguage(String language)
 	{
 		this.language = language;
 	}

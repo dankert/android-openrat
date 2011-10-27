@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,6 +82,14 @@ public class OpenRatBlog extends ListActivity
 					MODE_PRIVATE);
 
 			list.add(preferences.getString("name", "?"));
+		}
+
+		if (list.size() == 0)
+		{
+			// Noch kein Server konfiguriert. Hinweis anzeigen!
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(getResources().getString(R.string.noserver));
+			AlertDialog alert = builder.create();
 		}
 
 		final SimpleNameAdapter adapter = new SimpleNameAdapter(this, list,

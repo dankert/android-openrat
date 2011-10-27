@@ -204,7 +204,8 @@ public class OpenRatClient extends CMSRequest
 		try
 		{
 			response = super.performRequest();
-			Log.d("client", "Server-Response:\n" + response);
+			Log.d("client", "Server-Response:\n"
+					+ new String(response, "UTF-8"));
 		}
 		catch (SocketTimeoutException e)
 		{
@@ -221,13 +222,11 @@ public class OpenRatClient extends CMSRequest
 			JSONObject json;
 			try
 			{
-				json = new JSONObject(
-						new String(response,"UTF-8"));
+				json = new JSONObject(new String(response, "UTF-8"));
 			}
 			catch (UnsupportedEncodingException e1)
 			{
-				throw new OpenRatClientException(
-						"UTF-8 not supported?!", e1);
+				throw new OpenRatClientException("UTF-8 not supported?!", e1);
 			}
 
 			try
@@ -265,8 +264,8 @@ public class OpenRatClient extends CMSRequest
 		catch (JSONException e)
 		{
 			throw new OpenRatClientException(
-					"JSON Parsing Error. Original response was:\n" + new String(response)+"\n\n",
-					e);
+					"JSON Parsing Error. Original response was:\n"
+							+ new String(response) + "\n\n", e);
 		}
 	}
 
@@ -632,5 +631,47 @@ public class OpenRatClient extends CMSRequest
 
 		final byte[] content = performRequest();
 		return content;
+	}
+
+	public Map<String, String> getLanguages() throws IOException
+	{
+		super.clearParameters();
+		super.setMethod("GET");
+		super.setAction("language");
+		super.setActionMethod("listing");
+
+		final Map<String, String> languageMap = new LinkedHashMap<String, String>();
+
+		final JSONObject json = readJSON();
+		try
+		{
+			JSONObject languageObject = json.getJSONObject("el");
+
+			for (Iterator ti = languageObject.keys(); ti.hasNext();)
+			{
+				String id = (String) ti.next();
+				String name = languageObject.getJSONObject(id)
+						.getString("name");
+				languageMap.put(id, name);
+			}
+		}
+		catch (JSONException e)
+		{
+			Log.w(this.getClass().getSimpleName(), "\n\n" + json);
+			throw new OpenRatClientException("a property was not found", e);
+		}
+		return languageMap;
+
+	}
+
+	public void setLanguage(String languageid) throws IOException
+	{
+		super.clearParameters();
+		super.setMethod("GET");
+		super.setAction("index");
+		super.setActionMethod("language");
+		super.setId(languageid);
+		
+		readJSON();
 	}
 }

@@ -6,6 +6,7 @@ package de.openrat.android.blog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -16,7 +17,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,8 +69,8 @@ public class FolderActivity extends ListActivity
 			protected void callServer() throws IOException
 			{
 				folderid = getIntent().getStringExtra("folderid");
-					if (folderid == null)
-						folderid = client.getRootFolder();
+				if (folderid == null)
+					folderid = client.getRootFolder();
 
 				data = client.getFolderEntries(folderid);
 			}
@@ -83,7 +83,7 @@ public class FolderActivity extends ListActivity
 			};
 
 		}.execute();
-		
+
 		ListView list = getListView();
 
 		list.setOnItemClickListener(new OnItemClickListener()
@@ -267,30 +267,56 @@ public class FolderActivity extends ListActivity
 		switch (item.getItemId())
 		{
 			case R.id.menu_language:
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage(R.string.language).setCancelable(false)
-						.setPositiveButton("OK",
-								new DialogInterface.OnClickListener()
-								{
-									public void onClick(DialogInterface dialog,
-											int id)
-									{
-										// Speichern
-									}
-								}).setSingleChoiceItems(
-								new String[] { "a", "b" }, 1,
-								new OnClickListener()
+				new OpenRatClientAsyncTask(FolderActivity.this,
+						R.string.waitingforlanguageload)
+				{
+					private Map<String, String> languages;
+
+					@Override
+					protected void callServer() throws IOException
+					{
+						languages = client.getLanguages();
+					}
+
+					@Override
+					protected void doOnSuccess()
+					{
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								FolderActivity.this);
+						final String[] languageIds = languages.keySet()
+								.toArray(new String[0]);
+						final String[] languageNames = languages.values()
+								.toArray(new String[0]);
+						
+						builder.setTitle(R.string.language).setItems(
+								languageNames, new OnClickListener()
 								{
 
 									@Override
 									public void onClick(DialogInterface dialog,
 											int which)
 									{
-
+										final String newlanguageid = languageIds[which];
+										new OpenRatClientAsyncTask(
+												FolderActivity.this,
+												R.string.waitingforlanguagesave)
+										{
+											@Override
+											protected void callServer()
+													throws IOException
+											{
+												client
+														.setLanguage(newlanguageid);
+											}
+										}.execute();
+										//alert.cancel();
 									}
 								});
-				AlertDialog alert = builder.create();
-				alert.show();
+						final AlertDialog alert = builder.create();
+						alert.show();
+					}
+				}.execute();
+
 				return true;
 
 			case R.id.menu_upload:
