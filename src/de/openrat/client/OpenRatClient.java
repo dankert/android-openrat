@@ -29,6 +29,8 @@ import de.openrat.android.client.util.FileUtils;
 public class OpenRatClient extends CMSRequest
 {
 
+	private String token;
+
 	/**
 	 * 
 	 */
@@ -67,32 +69,35 @@ public class OpenRatClient extends CMSRequest
 	/**
 	 * Ermittelt den Inhalt eines Ordners.
 	 * 
-	 * @param folderid
-	 *            Id des zu ladenen Ordners. Falls <code>null</code>, wird der
-	 *            Rootfolder geladen.
-	 * @return Ordner-Einträge
+	 * @return Id des höchsten Ordners.
 	 */
 	public String getRootFolder() throws IOException
 	{
 		clearParameters();
 		setAction("tree");
-		setActionMethod("load");
+		setActionMethod("show");
+		setMethod("GET");
 
-		JSONObject json = readJSON();
+		readJSON();
+		
+		
+		
+		clearParameters();
+		setAction("tree");
+		setActionMethod("loadbranch");
+		setParameter("type","project");
+		setMethod("GET");
 
 		try
 		{
-			String folderurl = json.getJSONArray("zeilen").getJSONObject(1)
-					.getString("url");
-			String[] urlParts = folderurl.split("[^0-9]+");
-			String folderid = urlParts[urlParts.length - 1];
+			final String folderid = readJSON().getJSONObject("output").getJSONArray("branch").getJSONObject(0).getString("id");
 			return folderid;
 		}
 		catch (JSONException e)
 		{
-			throw new OpenRatClientException(
-					"JSON-Error while resolving root folder", e);
+			throw new OpenRatClientException("JSON-Error while resolving root folder", e);
 		}
+
 	}
 
 	/**
@@ -100,8 +105,7 @@ public class OpenRatClient extends CMSRequest
 	 * 
 	 * @return
 	 */
-	public Map<String, String> getValue(String pageid, String elementid)
-			throws IOException
+	public Map<String, String> getValue(String pageid, String elementid) throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
@@ -121,8 +125,7 @@ public class OpenRatClient extends CMSRequest
 		}
 		catch (JSONException e)
 		{
-			throw new OpenRatClientException(
-					"JSON-Error while resolving root folder", e);
+			throw new OpenRatClientException("JSON-Error while resolving root folder", e);
 		}
 	}
 
@@ -131,8 +134,8 @@ public class OpenRatClient extends CMSRequest
 	 * 
 	 * @return
 	 */
-	public void setValue(String pageid, String elementid, String type,
-			String value, boolean release, boolean publish) throws IOException
+	public void setValue(String pageid, String elementid, String type, String value, boolean release, boolean publish)
+			throws IOException
 	{
 		clearParameters();
 		setAction("pageelement");
@@ -155,20 +158,20 @@ public class OpenRatClient extends CMSRequest
 	 *            Rootfolder geladen.
 	 * @return Ordner-Einträge
 	 */
-	public List<FolderEntry> getFolderEntries(String folderid)
-			throws IOException
+	public List<FolderEntry> getFolderEntries(String folderid) throws IOException
 	{
 		final List<FolderEntry> data = new ArrayList<FolderEntry>();
 
 		super.clearParameters();
+		super.setMethod("GET");
 		super.setParameter("id", folderid);
 
 		super.setParameter("action", "folder");
-		super.setParameter("subaction", "show");
+		super.setParameter("subaction", "edit");
 
 		try
 		{
-			JSONObject json = readJSON();
+			JSONObject json = readJSON().getJSONObject("output");
 			if (!(json.get("object") instanceof JSONObject))
 				return data; // Ordner ist leer.
 
@@ -191,8 +194,7 @@ public class OpenRatClient extends CMSRequest
 		}
 		catch (JSONException e)
 		{
-			throw new OpenRatClientException("Coult not determine root folder",
-					e);
+			throw new OpenRatClientException("Coult not load folder "+folderid, e);
 		}
 
 		return data;
@@ -204,8 +206,7 @@ public class OpenRatClient extends CMSRequest
 		try
 		{
 			response = super.performRequest();
-			Log.d("client", "Server-Response:\n"
-					+ new String(response, "UTF-8"));
+			Log.d("client", "Server-Response:\n" + new String(response, "UTF-8"));
 		}
 		catch (SocketTimeoutException e)
 		{
@@ -213,8 +214,7 @@ public class OpenRatClient extends CMSRequest
 		}
 		catch (IOException e)
 		{
-			throw new OpenRatClientException(
-					"I/O-Error while performing the request", e);
+			throw new OpenRatClientException("I/O-Error while performing the request", e);
 		}
 
 		try
@@ -233,15 +233,14 @@ public class OpenRatClient extends CMSRequest
 			{
 				// Versuchen, die 1. Notice zu lesen. Falls es eine gibt,
 				// Exception mit dem Notice-Text werfen.
-				final String status = json.getString("notice_status");
+				final String status = json.getString("status");
 
 				if (!status.equalsIgnoreCase("ok"))
 				{
 					String msgText;
 					try
 					{
-						msgText = json.getJSONArray("notices").getJSONObject(0)
-								.getString("text");
+						msgText = json.getJSONArray("notices").getJSONObject(0).getString("text");
 					}
 					catch (JSONException e)
 					{
@@ -254,8 +253,9 @@ public class OpenRatClient extends CMSRequest
 			}
 			catch (JSONException e)
 			{
-				// throw new OpenRatClientException(
-				// "Server error: Response does not include a attribute 'notice_status'.\n"+response);
+				Log.w("client","Server error: Response does not include a attribute 'notice_status'.");
+//				throw new OpenRatClientException(
+//				 "Server error: Response does not include a attribute 'notice_status'.\n"+response);
 				return json; // Alles OK, kann passieren, wenn es keine Notices
 				// gibt.
 			}
@@ -263,9 +263,8 @@ public class OpenRatClient extends CMSRequest
 		}
 		catch (JSONException e)
 		{
-			throw new OpenRatClientException(
-					"JSON Parsing Error. Original response was:\n"
-							+ new String(response) + "\n\n", e);
+			throw new OpenRatClientException("JSON Parsing Error. Original response was:\n" + new String(response)
+					+ "\n\n", e);
 		}
 	}
 
@@ -344,8 +343,7 @@ public class OpenRatClient extends CMSRequest
 		{
 			throw new OpenRatClientException(e);
 		}
-		super.setFile(filenName, fileBytes, file.getName(), "image/jpeg",
-				"binary");
+		super.setFile(filenName, fileBytes, file.getName(), "image/jpeg", "binary");
 
 		@SuppressWarnings("unused")
 		final JSONObject response = readJSON();
@@ -376,31 +374,36 @@ public class OpenRatClient extends CMSRequest
 		JSONObject response = readJSON();
 	}
 
-	public void login(String login, String password, String database)
-			throws IOException
+	public void login(String login, String password, String database) throws IOException
 	{
-		super.setParameter("action", "index");
+		super.setParameter("action", "login");
 		super.setParameter("subaction", "login");
-		if (database.length() > 0)
-			super.setParameter("dbid", database);
-		super.setParameter("login_name", login);
-		super.setParameter("login_password", password);
 
 		JSONObject json = readJSON();
-		JSONObject session;
 		try
 		{
-			session = json.getJSONObject("session");
+			setMethod("GET");
+			JSONObject session = json.getJSONObject("session");
+			
 			final String sessionName = session.getString("name");
 			final String sessionId = session.getString("id");
+			this.token = session.getString("token");
 			setCookie(sessionName, sessionId);
+
+			if (database.length() > 0)
+				super.setParameter("dbid", database);
+			super.setParameter("login_name", login);
+			super.setParameter("login_password", password);
+			super.setParameter("token", this.token);
+			super.setMethod("POST");
+
+			json = readJSON();
 		}
 		catch (JSONException e)
 		{
 			try
 			{
-				final String msgText = json.getJSONArray("notices")
-						.getJSONObject(0).getString("text");
+				final String msgText = json.getJSONArray("notices").getJSONObject(0).getString("text");
 				throw new OpenRatClientException(msgText, e);
 			}
 			catch (JSONException e1)
@@ -415,13 +418,14 @@ public class OpenRatClient extends CMSRequest
 
 		List<FolderEntry> data = new ArrayList<FolderEntry>();
 
+		super.setMethod("GET");
 		super.clearParameters();
-		super.setParameter("action", "index");
+		super.setParameter("action", "start");
 		super.setParameter("subaction", "projectmenu");
-		JSONObject json = readJSON();
 
 		try
 		{
+			JSONObject json = readJSON().getJSONObject("output");
 			JSONArray projects = json.getJSONArray("projects");
 
 			for (int i = 0; i < projects.length(); i++)
@@ -457,10 +461,11 @@ public class OpenRatClient extends CMSRequest
 	{
 
 		super.clearParameters();
-		super.setAction("index");
-		super.setActionMethod("project");
+		super.setAction("start");
+		super.setActionMethod("projectmenu");
 		super.setParameter("id", projectid);
-		// super.setMethod("POST");
+		super.setParameter("token", this.token);
+		super.setMethod("POST");
 
 		readJSON();
 	}
@@ -485,8 +490,7 @@ public class OpenRatClient extends CMSRequest
 			for (Iterator ti = elements.keys(); ti.hasNext();)
 			{
 				String elementId = (String) ti.next();
-				String pageelementName = elements.getJSONObject(elementId)
-						.getString("name");
+				String pageelementName = elements.getJSONObject(elementId).getString("name");
 				elementMap.put(elementId, pageelementName);
 			}
 		}
@@ -500,8 +504,7 @@ public class OpenRatClient extends CMSRequest
 
 	}
 
-	public Map<String, String> getProperties(String type, String id)
-			throws IOException
+	public Map<String, String> getProperties(String type, String id) throws IOException
 	{
 		super.clearParameters();
 		super.setAction(type);
@@ -527,8 +530,7 @@ public class OpenRatClient extends CMSRequest
 
 	}
 
-	public void setProperties(String type, String id,
-			Map<String, String> properties) throws IOException
+	public void setProperties(String type, String id, Map<String, String> properties) throws IOException
 	{
 		super.clearParameters();
 		super.setAction(type);
@@ -565,8 +567,7 @@ public class OpenRatClient extends CMSRequest
 			for (Iterator ti = templates.keys(); ti.hasNext();)
 			{
 				String templateId = (String) ti.next();
-				String templateName = templates.getJSONObject(templateId)
-						.getString("name");
+				String templateName = templates.getJSONObject(templateId).getString("name");
 				templateMap.put(templateId, templateName);
 			}
 		}
@@ -591,8 +592,7 @@ public class OpenRatClient extends CMSRequest
 		readJSON();
 	}
 
-	public void createPage(String folderid, String string, String templateid)
-			throws IOException
+	public void createPage(String folderid, String string, String templateid) throws IOException
 	{
 		super.clearParameters();
 		super.setId(folderid);
@@ -650,8 +650,7 @@ public class OpenRatClient extends CMSRequest
 			for (Iterator ti = languageObject.keys(); ti.hasNext();)
 			{
 				String id = (String) ti.next();
-				String name = languageObject.getJSONObject(id)
-						.getString("name");
+				String name = languageObject.getJSONObject(id).getString("name");
 				languageMap.put(id, name);
 			}
 		}
@@ -671,7 +670,7 @@ public class OpenRatClient extends CMSRequest
 		super.setAction("index");
 		super.setActionMethod("language");
 		super.setId(languageid);
-		
+
 		readJSON();
 	}
 }

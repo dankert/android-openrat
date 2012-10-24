@@ -38,6 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.util.Log;
+
 /**
  * API-Request to the OpenRat Content Management System. <br>
  * <br>
@@ -345,10 +347,19 @@ public class HTTPRequest implements Serializable
 			final boolean useProxy = this.proxyHostname != null;
 			final boolean useCookie = this.cookieName != null;
 
+			// Pfad muss mit '/' beginnen und '/' enden.
 			if (serverPath == null)
 				this.serverPath = "/";
+			
 			if (!serverPath.startsWith("/"))
 				this.serverPath = "/" + this.serverPath;
+			
+			if	(!this.serverPath.endsWith("/") )
+				this.serverPath += "/";
+			
+			// Jetzt noch den Dipatcher hinzufügen.
+			if	(!this.serverPath.endsWith("dispatcher.php") )
+				this.serverPath += "dispatcher.php";
 
 			// When a client uses a proxy, it typically sends all requests to
 			// that proxy, instead
@@ -483,7 +494,6 @@ public class HTTPRequest implements Serializable
 			// Check if we got the status 200=OK.
 			if (!httpRetCode.equals("200"))
 			{
-
 				// non-200-status seems to be an error.
 				throw new IOException("No HTTP 200: Status=" + httpRetCode
 						+ " (" + httpResponse + ")");
